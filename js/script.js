@@ -14,15 +14,30 @@ const redBinImg = new Image();
 const greenBinImg = new Image();
 const yellowBinImg = new Image();
 
+const blueBinNoLidImg = new Image();
+const redBinNoLidImg = new Image();
+const greenBinNoLidImg = new Image();
+const yellowBinNoLidImg = new Image();
+
 let blueLoaded = false;
 let redLoaded = false;
 let greenLoaded = false;
 let yellowLoaded = false;
 
+let blueNoLidLoaded = false;
+let redNoLidLoaded = false;
+let greenNoLidLoaded = false;
+let yellowNoLidLoaded = false;
+
 blueBinImg.src = "../images/blue_trashcan_nobg.png";
 redBinImg.src = "../images/red_trashcan_nobg.png";
 greenBinImg.src = "../images/green_trashcan_nobg.png";
 yellowBinImg.src = "../images/yellow_trashcan_nobg.png";
+
+blueBinNoLidImg.src = "../images/blue_trashcan_nobg_nolid.png";
+redBinNoLidImg.src = "../images/red_trashcan_nobg_nolid.png";
+greenBinNoLidImg.src = "../images/green_trashcan_nobg_nolid.png";
+yellowBinNoLidImg.src = "../images/yellow_trashcan_nobg_nolid.png";
 
 blueBinImg.onload = () => {
   blueLoaded = true;
@@ -38,6 +53,23 @@ greenBinImg.onload = () => {
 };
 yellowBinImg.onload = () => {
   yellowLoaded = true;
+  drawings();
+};
+
+blueBinNoLidImg.onload = () => {
+  blueNoLidLoaded = true;
+  drawings();
+};
+redBinNoLidImg.onload = () => {
+  redNoLidLoaded = true;
+  drawings();
+};
+greenBinNoLidImg.onload = () => {
+  greenNoLidLoaded = true;
+  drawings();
+};
+yellowBinNoLidImg.onload = () => {
+  yellowNoLidLoaded = true;
   drawings();
 };
 
@@ -73,20 +105,10 @@ function moveLines(dx) {
   drawings();
 }
 
-window.addEventListener("keydown", (event) => {
-  if (event.key === "ArrowLeft") {
-    event.preventDefault();
-    moveLines(-steps);
-  } else if (event.key === "ArrowRight") {
-    event.preventDefault();
-    moveLines(steps);
-  }
-});
-
-const binPositionsX = [180, 530, 880, 1230];
-const binDrawY = 150;
-
 function drawBins() {
+  const binPositionsX = [180, 530, 880, 1230];
+  const binDrawY = 150;
+
   const binImages = [
     { img: blueBinImg, loaded: blueLoaded },
     { img: redBinImg, loaded: redLoaded },
@@ -98,12 +120,37 @@ function drawBins() {
     const entry = binImages[i];
     if (!entry.loaded) continue;
 
-    const img = entry.img;
-    const drawW = (img.naturalWidth || img.width) / 3;
-    const drawH = (img.naturalHeight || img.height) / 3;
+    let imgToDraw = entry.img;
+    if (i === 0 && blueNoLidLoaded) {
+      const centerX = binPositionsX[i];
+      if (centerX >= guideline1 && centerX <= guideline2) {
+        imgToDraw = blueBinNoLidImg;
+      }
+    }
+    if (i === 1 && redNoLidLoaded) {
+      const centerX = binPositionsX[i];
+      if (centerX >= guideline1 && centerX <= guideline2) {
+        imgToDraw = redBinNoLidImg;
+      }
+    }
+    if (i === 2 && greenNoLidLoaded) {
+      const centerX = binPositionsX[i];
+      if (centerX >= guideline1 && centerX <= guideline2) {
+        imgToDraw = greenBinNoLidImg;
+      }
+    }
+    if (i === 3 && yellowNoLidLoaded) {
+      const centerX = binPositionsX[i];
+      if (centerX >= guideline1 && centerX <= guideline2) {
+        imgToDraw = yellowBinNoLidImg;
+      }
+    }
+
+    const drawW = (imgToDraw.naturalWidth || imgToDraw.width) / 3;
+    const drawH = (imgToDraw.naturalHeight || imgToDraw.height) / 3;
 
     const drawX = binPositionsX[i] - drawW / 2;
-    ctx.drawImage(img, drawX, binDrawY, drawW, drawH);
+    ctx.drawImage(imgToDraw, drawX, binDrawY, drawW, drawH);
   }
 }
 
@@ -117,3 +164,13 @@ function drawings() {
 }
 
 drawings();
+
+window.addEventListener("keydown", (event) => {
+  if (event.key === "ArrowLeft") {
+    event.preventDefault();
+    moveLines(-steps);
+  } else if (event.key === "ArrowRight") {
+    event.preventDefault();
+    moveLines(steps);
+  }
+});
