@@ -29,6 +29,8 @@ let redNoLidLoaded = false;
 let greenNoLidLoaded = false;
 let yellowNoLidLoaded = false;
 
+let cannonLoaded = false;
+
 blueBinImg.src = "../images/blue_trashcan_nobg.png";
 redBinImg.src = "../images/red_trashcan_nobg.png";
 greenBinImg.src = "../images/green_trashcan_nobg.png";
@@ -38,6 +40,9 @@ blueBinNoLidImg.src = "../images/blue_trashcan_nobg_nolid.png";
 redBinNoLidImg.src = "../images/red_trashcan_nobg_nolid.png";
 greenBinNoLidImg.src = "../images/green_trashcan_nobg_nolid.png";
 yellowBinNoLidImg.src = "../images/yellow_trashcan_nobg_nolid.png";
+
+let cannonImg = new Image();
+cannonImg.src = "../images/cannon_nobg.png";
 
 blueBinImg.onload = () => {
   blueLoaded = true;
@@ -73,6 +78,11 @@ yellowBinNoLidImg.onload = () => {
   drawings();
 };
 
+cannonImg.onload = () => {
+  cannonLoaded = true;
+  drawings();
+};
+
 function clearCanvas() {
   ctx.clearRect(0, 0, W, H);
 }
@@ -81,15 +91,15 @@ function guidelines() {
   ctx.beginPath();
   ctx.moveTo(guideline1, 0);
   ctx.lineTo(guideline1, H);
-  ctx.strokeStyle = "orange";
-  ctx.lineWidth = 2;
+  ctx.strokeStyle = "black";
+  ctx.lineWidth = 1;
   ctx.stroke();
 
   ctx.beginPath();
   ctx.moveTo(guideline2, 0);
   ctx.lineTo(guideline2, H);
-  ctx.strokeStyle = "orange";
-  ctx.lineWidth = 2;
+  ctx.strokeStyle = "black";
+  ctx.lineWidth = 1;
   ctx.stroke();
 }
 
@@ -154,7 +164,32 @@ function drawBins() {
   }
 }
 
-function drawCannon() {}
+function cannonMovement() {
+  for (let i = 0; i < binPositionsX.length; i++) {
+    if (binPositionsX[i] >= guideline1 && binPositionsX[i] <= guideline2) {
+      return i;
+    }
+  }
+  return -1;
+}
+
+function drawCannon() {
+  const cannonPositionX = 700;
+  const cannonPositionY = 460;
+
+  const cannonImages = [{ img: cannonImg, loaded: cannonLoaded }];
+  for (let i = 0; i < cannonImages.length; i++) {
+    const entry = cannonImages[i];
+    if (!entry.loaded) continue;
+    let imgToDraw = entry.img;
+
+    const drawW = (imgToDraw.naturalWidth || imgToDraw.width) / 3;
+    const drawH = (imgToDraw.naturalHeight || imgToDraw.height) / 3;
+
+    const drawX = cannonPositionX - drawW / 2;
+    ctx.drawImage(imgToDraw, drawX, cannonPositionY, drawW, drawH);
+  }
+}
 
 function drawings() {
   clearCanvas();
