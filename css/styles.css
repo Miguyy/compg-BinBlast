@@ -5,3 +5,168 @@ canvas {
   margin: 0 auto;
   margin-top: 100px;
 }
+
+/* ------------------------ INDEX STYLES ------------------------ */
+/* ------------------------------------------------------------------------ */
+.navbar {
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.navbar-nav .nav-link {
+  color: #fff;
+  font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  font-size: 28px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: normal;
+  margin-top: 25px;
+  margin-right: 50px;
+}
+
+.navbar-toggler {
+  border-color: rgba(0, 0, 0, 0.2);
+}
+
+.container.text-center .row {
+  align-items: center;
+}
+
+.container.text-center .row > .col-8 {
+  display: flex;
+  justify-content: flex-start;
+  padding-left: 0;
+}
+
+.container.text-center .row > .col-4 {
+  display: flex;
+  justify-content: flex-end;
+  padding-right: 20px;
+}
+
+.main-image {
+  max-width: 100%;
+  height: auto;
+  margin-top: 120px;
+  display: block;
+  margin-right: 20px;
+  margin-left: -200px;
+}
+
+.sub-image {
+  max-width: 100%;
+  height: auto;
+  margin-top: -100px;
+  display: block;
+  margin-left: 100px;
+}
+
+#sub-image-paragraph {
+  color: #863228;
+  font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  font-size: 24px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  width: 531.773px;
+  height: 58px;
+  flex-shrink: 0;
+  margin-top: 45px;
+  margin-left: 50px;
+  text-align: center;
+  animation: slidein 1s ease-out;
+}
+
+@keyframes slidein {
+  from {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+#try-game-button {
+  display: inline-flex;
+  padding: 9px 38px;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  border: 2px solid #863228;
+  background: #fff;
+  color: #863228;
+  cursor: pointer;
+  transition: transform 420ms ease, background-color 220ms ease,
+    color 220ms ease, border-color 220ms ease;
+  transform-origin: center center;
+  -webkit-tap-highlight-color: transparent;
+  border-radius: 6px;
+  box-sizing: border-box;
+  font-family: "Jersey 10", system-ui, -apple-system, "Segoe UI", Roboto, Arial,
+    sans-serif;
+  margin-left: 50px;
+  margin-top: 45px;
+}
+
+#try-game-button a {
+  color: inherit;
+  text-decoration: none;
+  display: inline-block;
+  width: 100%;
+  height: 100%;
+  line-height: inherit;
+}
+
+#try-game-button.active {
+  background: #863228;
+  color: #fff;
+  border-color: #fff;
+  transform: rotate(360deg);
+}
+
+#try-game-button:active {
+  transform: scale(0.98);
+}
+
+#try-game-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(134, 50, 40, 0.12);
+}
+
+.clouds-images-container {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: visible;
+  z-index: 10;
+}
+
+.cloud {
+  position: absolute;
+  left: var(--cloud-x, 0px);
+  top: var(--cloud-y, 0px);
+  width: var(--cloud-width, 200px);
+  height: auto;
+  opacity: var(--cloud-opacity, 1);
+  will-change: transform;
+  pointer-events: none;
+  z-index: 10;
+  animation: cloud-move var(--cloud-duration, 18s) linear var(--cloud-delay, 0s)
+    infinite;
+}
+
+@keyframes cloud-move {
+  0% {
+    transform: translateX(-200%);
+  }
+  100% {
+    transform: translateX(1100%);
+  }
+}
