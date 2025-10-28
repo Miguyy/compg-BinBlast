@@ -13,7 +13,7 @@
     />
   </head>
 
-  <body>
+  <body id="body-index">
     <nav class="navbar navbar-expand-lg navbar-light bg-transparent">
       <div class="container-fluid">
         <img
@@ -190,6 +190,26 @@
         e.preventDefault();
         alert(
           "Usa as setas do teclado para apontares para onde queres lançar o resíduo. Carrega na barra de espaço para lançares o resíduo. O objectivo é reciclar o máximo de resíduos possível!!"
+        );
+      });
+    });
+    document.addEventListener("DOMContentLoaded", () => {
+      const howLink = document.querySelector('a[href="#about"]');
+      if (!howLink) return;
+      howLink.addEventListener("click", (e) => {
+        e.preventDefault();
+        alert(
+          "BinBlast é um jogo educativo desenvolvido para a disciplina de Computação Gráfica do Instituto Politécnico do Porto - ESMAD. O objetivo do jogo é promover a consciência ambiental e a importância da reciclagem, proporcionando uma experiência divertida e interativa aos jogadores."
+        );
+      });
+    });
+    document.addEventListener("DOMContentLoaded", () => {
+      const howLink = document.querySelector('a[href="#credits"]');
+      if (!howLink) return;
+      howLink.addEventListener("click", (e) => {
+        e.preventDefault();
+        alert(
+          "Desenvolvido por Miguel Machado e Manuel Teixeira para a cadeira de Computação Gráfica do Instituto Politécnico do Porto - ESMAD."
         );
       });
     });

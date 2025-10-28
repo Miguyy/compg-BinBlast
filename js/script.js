@@ -19,6 +19,11 @@ const redBinNoLidImg = new Image();
 const greenBinNoLidImg = new Image();
 const yellowBinNoLidImg = new Image();
 
+let cannonImg = new Image();
+
+let backgroundCanvasImg = new Image();
+let cloudCanvasImg = new Image();
+
 let blueLoaded = false;
 let redLoaded = false;
 let greenLoaded = false;
@@ -31,6 +36,9 @@ let yellowNoLidLoaded = false;
 
 let cannonLoaded = false;
 
+let backgroundCanvasLoaded = false;
+let cloudCanvasLoaded = false;
+
 blueBinImg.src = "../images/blue_trashcan_nobg.png";
 redBinImg.src = "../images/red_trashcan_nobg.png";
 greenBinImg.src = "../images/green_trashcan_nobg.png";
@@ -41,8 +49,10 @@ redBinNoLidImg.src = "../images/red_trashcan_nobg_nolid.png";
 greenBinNoLidImg.src = "../images/green_trashcan_nobg_nolid.png";
 yellowBinNoLidImg.src = "../images/yellow_trashcan_nobg_nolid.png";
 
-let cannonImg = new Image();
 cannonImg.src = "../images/cannon_nobg.png";
+
+backgroundCanvasImg.src = "../images/canvas background.png";
+cloudCanvasImg.src = "../images/cloud.png";
 
 blueBinImg.onload = () => {
   blueLoaded = true;
@@ -83,8 +93,20 @@ cannonImg.onload = () => {
   drawings();
 };
 
+backgroundCanvasImg.onload = () => {
+  backgroundCanvasLoaded = true;
+  drawings();
+};
+cloudCanvasImg.onload = () => {
+  cloudCanvasLoaded = true;
+  drawings();
+};
+
 function clearCanvas() {
   ctx.clearRect(0, 0, W, H);
+  if (backgroundCanvasLoaded) {
+    ctx.drawImage(backgroundCanvasImg, 0, 0, W, H);
+  }
 }
 
 function guidelines() {
@@ -92,14 +114,14 @@ function guidelines() {
   ctx.moveTo(guideline1, 0);
   ctx.lineTo(guideline1, H);
   ctx.strokeStyle = "black";
-  ctx.lineWidth = 1;
+  ctx.lineWidth = 2;
   ctx.stroke();
 
   ctx.beginPath();
   ctx.moveTo(guideline2, 0);
   ctx.lineTo(guideline2, H);
   ctx.strokeStyle = "black";
-  ctx.lineWidth = 1;
+  ctx.lineWidth = 2;
   ctx.stroke();
 }
 
@@ -117,7 +139,7 @@ function moveLines(dx) {
 
 function drawBins() {
   const binPositionsX = [180, 530, 880, 1230];
-  const binDrawY = 150;
+  const binDrawY = 360;
 
   const binImages = [
     { img: blueBinImg, loaded: blueLoaded },
@@ -164,18 +186,9 @@ function drawBins() {
   }
 }
 
-function cannonMovement() {
-  for (let i = 0; i < binPositionsX.length; i++) {
-    if (binPositionsX[i] >= guideline1 && binPositionsX[i] <= guideline2) {
-      return i;
-    }
-  }
-  return -1;
-}
-
 function drawCannon() {
   const cannonPositionX = 700;
-  const cannonPositionY = 460;
+  const cannonPositionY = 507;
 
   const cannonImages = [{ img: cannonImg, loaded: cannonLoaded }];
   for (let i = 0; i < cannonImages.length; i++) {
@@ -183,8 +196,8 @@ function drawCannon() {
     if (!entry.loaded) continue;
     let imgToDraw = entry.img;
 
-    const drawW = (imgToDraw.naturalWidth || imgToDraw.width) / 3;
-    const drawH = (imgToDraw.naturalHeight || imgToDraw.height) / 3;
+    const drawW = (imgToDraw.naturalWidth || imgToDraw.width) / 4;
+    const drawH = (imgToDraw.naturalHeight || imgToDraw.height) / 4;
 
     const drawX = cannonPositionX - drawW / 2;
     ctx.drawImage(imgToDraw, drawX, cannonPositionY, drawW, drawH);

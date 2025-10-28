@@ -1,7 +1,20 @@
-body {
+#body-index {
   min-height: 100vh;
   margin: 0;
   background: linear-gradient(180deg, #2eccde 39%, #58f5eb 61%);
+  background-attachment: fixed;
+}
+
+#body-game {
+  min-height: 100vh;
+  margin: 0;
+  background: linear-gradient(
+    180deg,
+    #16b5ff 36.18%,
+    #43d4ff 67.3%,
+    #a2f7fe 83.93%
+  );
+
   background-attachment: fixed;
 }
 
