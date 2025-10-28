@@ -1,9 +1,17 @@
+body {
+  min-height: 100vh;
+  margin: 0;
+  background: linear-gradient(180deg, #2eccde 39%, #58f5eb 61%);
+  background-attachment: fixed;
+}
+
 /* ------------------------ CANVAS STYLES ------------------------ */
 /* ------------------------------------------------------------------------ */
 canvas {
   display: block;
   margin: 0 auto;
-  margin-top: 100px;
+  margin-top: 50px;
+  margin-bottom: 50px;
 }
 
 /* ------------------------ INDEX STYLES ------------------------ */
