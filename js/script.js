@@ -1,224 +1,160 @@
 const canvas = document.getElementById("binBlastCanvas");
 const ctx = canvas.getContext("2d");
 
-let W = canvas.width;
-let H = canvas.height;
+// sizing
+function fitCanvas() {
+  canvas.width = canvas.clientWidth || 1400;
+  canvas.height = canvas.clientHeight || 700;
+}
+fitCanvas();
+window.addEventListener("resize", () => { fitCanvas(); /* don't call drawAll here, render loop handles it */ });
 
-let guideline1 = 20;
-let guideline2 = 330;
-const spacing = guideline2 - guideline1;
-const steps = 350;
+const STEP = 350; // distance between visible slots
+const ANIM_DURATION = 420; // ms, adjust for speed
 
-const blueBinImg = new Image();
-const redBinImg = new Image();
-const greenBinImg = new Image();
-const yellowBinImg = new Image();
+// helper to create Image with onload flag
+function makeImg(src) {
+  const img = new Image();
+  img.src = src;
+  img._loaded = false;
+  img.onload = () => { img._loaded = true; /* no direct drawing - render loop will redraw */ };
+  return img;
+}
 
-const blueBinNoLidImg = new Image();
-const redBinNoLidImg = new Image();
-const greenBinNoLidImg = new Image();
-const yellowBinNoLidImg = new Image();
-
-let cannonImg = new Image();
-
-let backgroundCanvasImg = new Image();
-let cloudCanvasImg = new Image();
-
-let blueLoaded = false;
-let redLoaded = false;
-let greenLoaded = false;
-let yellowLoaded = false;
-
-let blueNoLidLoaded = false;
-let redNoLidLoaded = false;
-let greenNoLidLoaded = false;
-let yellowNoLidLoaded = false;
-
-let cannonLoaded = false;
-
-let backgroundCanvasLoaded = false;
-let cloudCanvasLoaded = false;
-
-blueBinImg.src = "../images/blue_trashcan_nobg.png";
-redBinImg.src = "../images/red_trashcan_nobg.png";
-greenBinImg.src = "../images/green_trashcan_nobg.png";
-yellowBinImg.src = "../images/yellow_trashcan_nobg.png";
-
-blueBinNoLidImg.src = "../images/blue_trashcan_nobg_nolid.png";
-redBinNoLidImg.src = "../images/red_trashcan_nobg_nolid.png";
-greenBinNoLidImg.src = "../images/green_trashcan_nobg_nolid.png";
-yellowBinNoLidImg.src = "../images/yellow_trashcan_nobg_nolid.png";
-
-cannonImg.src = "../images/cannon_nobg.png";
-
-backgroundCanvasImg.src = "../images/canvas background.png";
-cloudCanvasImg.src = "../images/cloud.png";
-
-blueBinImg.onload = () => {
-  blueLoaded = true;
-  drawings();
-};
-redBinImg.onload = () => {
-  redLoaded = true;
-  drawings();
-};
-greenBinImg.onload = () => {
-  greenLoaded = true;
-  drawings();
-};
-yellowBinImg.onload = () => {
-  yellowLoaded = true;
-  drawings();
+// images
+const images = {
+  background: makeImg("../images/canvas background.png"),
+  cloud: makeImg("../images/cloud.png"),
+  cannon: makeImg("../images/cannon_nobg.png"),
+  bins: {
+    blue: { img: makeImg("../images/blue_trashcan_nobg.png"), noLid: makeImg("../images/blue_trashcan_nobg_nolid.png") },
+    red:  { img: makeImg("../images/red_trashcan_nobg.png"),  noLid: makeImg("../images/red_trashcan_nobg_nolid.png")  },
+    green:{ img: makeImg("../images/green_trashcan_nobg.png"),noLid: makeImg("../images/green_trashcan_nobg_nolid.png")},
+    yellow:{img: makeImg("../images/yellow_trashcan_nobg.png"),noLid: makeImg("../images/yellow_trashcan_nobg_nolid.png")},
+  }
 };
 
-blueBinNoLidImg.onload = () => {
-  blueNoLidLoaded = true;
-  drawings();
-};
-redBinNoLidImg.onload = () => {
-  redNoLidLoaded = true;
-  drawings();
-};
-greenBinNoLidImg.onload = () => {
-  greenNoLidLoaded = true;
-  drawings();
-};
-yellowBinNoLidImg.onload = () => {
-  yellowNoLidLoaded = true;
-  drawings();
-};
+// logical bins sequence (circular)
+const binIds = ["green", "blue", "yellow", "red"]; // duplicated green to have 5 bins for testing
+let centerIndex = 1; // index in binIds that is center visible
 
-cannonImg.onload = () => {
-  cannonLoaded = true;
-  drawings();
-};
+// animation state (time-based)
+let animOffset = 0;        // used by drawBins
+let animating = false;
+let animStartTime = 0;
+let animFrom = 0;
+let animTo = 0;
 
-backgroundCanvasImg.onload = () => {
-  backgroundCanvasLoaded = true;
-  drawings();
-};
-cloudCanvasImg.onload = () => {
-  cloudCanvasLoaded = true;
-  drawings();
-};
+function easeOutCubic(t) { return 1 - Math.pow(1 - t, 3); }
+
+// compute 3 slot x positions (left, center, right)
+function slotXs() {
+  const cx = canvas.width / 2;
+  return [cx - STEP, cx, cx + STEP];
+}
 
 function clearCanvas() {
-  ctx.clearRect(0, 0, W, H);
-  if (backgroundCanvasLoaded) {
-    ctx.drawImage(backgroundCanvasImg, 0, 0, W, H);
-  }
-}
-
-function guidelines() {
-  ctx.beginPath();
-  ctx.moveTo(guideline1, 0);
-  ctx.lineTo(guideline1, H);
-  ctx.strokeStyle = "black";
-  ctx.lineWidth = 2;
-  ctx.stroke();
-
-  ctx.beginPath();
-  ctx.moveTo(guideline2, 0);
-  ctx.lineTo(guideline2, H);
-  ctx.strokeStyle = "black";
-  ctx.lineWidth = 2;
-  ctx.stroke();
-}
-
-function moveLines(dx) {
-  let newGuideline1 = guideline1 + dx;
-  let newGuideline2 = guideline2 + dx;
-
-  if (newGuideline1 >= 0 && newGuideline2 <= W) {
-    guideline1 = newGuideline1;
-    guideline2 = newGuideline2;
-  }
-
-  drawings();
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  if (images.background._loaded) ctx.drawImage(images.background, 0, 0, canvas.width, canvas.height);
 }
 
 function drawBins() {
-  const binPositionsX = [180, 530, 880, 1230];
-  const binDrawY = 360;
-
-  const binImages = [
-    { img: blueBinImg, loaded: blueLoaded },
-    { img: redBinImg, loaded: redLoaded },
-    { img: greenBinImg, loaded: greenLoaded },
-    { img: yellowBinImg, loaded: yellowLoaded },
+  const xs = slotXs();
+  const n = binIds.length;
+  const left = (centerIndex - 1 + n) % n;
+  const center = centerIndex % n;
+  const right = (centerIndex + 1) % n;
+  const slots = [
+    { x: xs[0] + animOffset, id: binIds[left] },
+    { x: xs[1] + animOffset, id: binIds[center] },
+    { x: xs[2] + animOffset, id: binIds[right] }
   ];
+  const drawY = 360;
+  slots.forEach(s => {
+    const entry = images.bins[s.id];
+    if (!entry.img._loaded) return;
+    const centerX = s.x;
 
-  for (let i = 0; i < binImages.length; i++) {
-    const entry = binImages[i];
-    if (!entry.loaded) continue;
+    // only center slot uses no-lid image
+    const isCenterSlot = s.id === binIds[center];
+    const useNoLid = entry.noLid._loaded && isCenterSlot;
+    const useImg = useNoLid ? entry.noLid : entry.img;
 
-    let imgToDraw = entry.img;
-    if (i === 0 && blueNoLidLoaded) {
-      const centerX = binPositionsX[i];
-      if (centerX >= guideline1 && centerX <= guideline2) {
-        imgToDraw = blueBinNoLidImg;
-      }
-    }
-    if (i === 1 && redNoLidLoaded) {
-      const centerX = binPositionsX[i];
-      if (centerX >= guideline1 && centerX <= guideline2) {
-        imgToDraw = redBinNoLidImg;
-      }
-    }
-    if (i === 2 && greenNoLidLoaded) {
-      const centerX = binPositionsX[i];
-      if (centerX >= guideline1 && centerX <= guideline2) {
-        imgToDraw = greenBinNoLidImg;
-      }
-    }
-    if (i === 3 && yellowNoLidLoaded) {
-      const centerX = binPositionsX[i];
-      if (centerX >= guideline1 && centerX <= guideline2) {
-        imgToDraw = yellowBinNoLidImg;
-      }
-    }
-
-    const drawW = (imgToDraw.naturalWidth || imgToDraw.width) / 3;
-    const drawH = (imgToDraw.naturalHeight || imgToDraw.height) / 3;
-
-    const drawX = binPositionsX[i] - drawW / 2;
-    ctx.drawImage(imgToDraw, drawX, binDrawY, drawW, drawH);
-  }
+    const drawW = (useImg.naturalWidth || useImg.width) / 3;
+    const drawH = (useImg.naturalHeight || useImg.height) / 3;
+    const drawX = centerX - drawW / 2;
+    if (drawX + drawW < 0 || drawX > canvas.width) return;
+    ctx.drawImage(useImg, drawX, drawY, drawW, drawH);
+  });
 }
 
 function drawCannon() {
-  const cannonPositionX = 700;
-  const cannonPositionY = 507;
-
-  const cannonImages = [{ img: cannonImg, loaded: cannonLoaded }];
-  for (let i = 0; i < cannonImages.length; i++) {
-    const entry = cannonImages[i];
-    if (!entry.loaded) continue;
-    let imgToDraw = entry.img;
-
-    const drawW = (imgToDraw.naturalWidth || imgToDraw.width) / 4;
-    const drawH = (imgToDraw.naturalHeight || imgToDraw.height) / 4;
-
-    const drawX = cannonPositionX - drawW / 2;
-    ctx.drawImage(imgToDraw, drawX, cannonPositionY, drawW, drawH);
-  }
+  if (!images.cannon._loaded) return;
+  const img = images.cannon;
+  const drawW = (img.naturalWidth || img.width) / 4;
+  const drawH = (img.naturalHeight || img.height) / 4;
+  const drawX = canvas.width / 2 - drawW / 2;
+  ctx.drawImage(img, drawX, 507, drawW, drawH);
 }
 
-function drawings() {
+function drawAll() {
   clearCanvas();
-  guidelines();
   drawBins();
   drawCannon();
 }
 
-drawings();
+// Continuous render loop (based on your example)
+function render(timestamp) {
+  // update animation state if animating
+  if (animating) {
+    if (!animStartTime) animStartTime = timestamp;
+    const elapsed = timestamp - animStartTime;
+    const t = Math.min(1, elapsed / ANIM_DURATION);
+    const eased = easeOutCubic(t);
+    animOffset = animFrom + (animTo - animFrom) * eased;
 
-window.addEventListener("keydown", (event) => {
-  if (event.key === "ArrowLeft") {
-    event.preventDefault();
-    moveLines(-steps);
-  } else if (event.key === "ArrowRight") {
-    event.preventDefault();
-    moveLines(steps);
+    if (t >= 1) {
+      // animation finished -> rotate centerIndex accordingly
+      if (animTo < animFrom) {
+        // moved left (show next)
+        centerIndex = (centerIndex + 1) % binIds.length;
+      } else if (animTo > animFrom) {
+        // moved right (show previous)
+        centerIndex = (centerIndex - 1 + binIds.length) % binIds.length;
+      }
+      // reset animation
+      animOffset = 0;
+      animating = false;
+      animStartTime = 0;
+      animFrom = 0;
+      animTo = 0;
+    }
+  }
+
+  // redraw every frame
+  drawAll();
+
+  // next frame
+  requestAnimationFrame(render);
+}
+
+// start the loop
+requestAnimationFrame(render);
+
+// keyboard: start an animation cycle (render loop does the per-frame updates)
+window.addEventListener("keydown", (e) => {
+  if (animating) return;
+  if (e.key === "ArrowRight") {
+    e.preventDefault();
+    animating = true;
+    animStartTime = 0;
+    animFrom = 0;
+    animTo = -STEP; // slide left (show next)
+  } else if (e.key === "ArrowLeft") {
+    e.preventDefault();
+    animating = true;
+    animStartTime = 0;
+    animFrom = 0;
+    animTo = +STEP; // slide right (show previous)
   }
 });
