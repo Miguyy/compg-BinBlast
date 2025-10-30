@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BinBlast</title>
+    <link rel="stylesheet" href="../css/styles.css" />
+  </head>
+  <body>
+    <div id="centerCanvas">
+      <canvas
+        id="binBlastCanvas"
+        width="1400"
+        height="700"
+        style="border: 2px solid #000000"
+      >
+        Your browser does not support the HTML5 canvas tag.
+      </canvas>
+    </div>
+
+    <script>
+      const canvas = document.getElementById("binBlastCanvas");
+      const ctx = canvas.getContext("2d");
+
+      let W = canvas.width;
+      let H = canvas.height;
+
+      let cannonImg = new Image();
+      cannonImg.src = "../images/cannon_nobg.png";
+
+      function clearCanvas() {
+        ctx.clearRect(0, 0, W, H);
+      }
+
+      function drawBins() {
+        cannonImg.onload = function () {
+          ctx.drawImage(
+            cannonImg,
+            W / 2 - 230,
+            460,
+            cannonImg.width / 3,
+            cannonImg.height / 3
+          );
+        };
+      }
+      drawBins();
+
+      class cannonResidual {
+        constructor() {}
+      }
+
+      class residual {
+        constructor() {}
+      }
+
+      let cannonResiduals = [];
+
+      window.onload = render; // start the animation
+
+      canvas.addEventListener("keypress", (e) => {
+        if (e.code === "Space") {
+          // Create a new cannon residual
+          let newCannonResidual = new cannonResidual();
+          cannonResiduals.push(newCannonResidual);
+        }
+      });
+
+      function render() {
+        clearCanvas();
+        requestAnimationFrame(render);
+      }
+    </script>
+  </body>
+</html>
