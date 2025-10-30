@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BinBlast</title>
+    <link rel="stylesheet" href="../css/styles.css" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
+      crossorigin="anonymous"
+    />
+    <link rel="icon" href="../images/logo.png" type="image/x-icon" />
+  </head>
+  <body id="body-game">
+    <div>
+      <button id="goback-game-button">
+        <a href="../html/index.html">← GO BACK</a>
+      </button>
+    </div>
+    <div id="centerCanvas">
+      <img
+        id="overlayImage"
+        src="../images/icon.png"
+        alt="overlay"
+        style="
+          position: absolute;
+          left: 50%;
+          transform: translateX(-50%);
+          top: 50px; /* distancia acima do canvas: ajusta conforme necessário */
+          width: 200; /* ou usar max-width: 20%; para responsivo */
+          height: auto;
+          z-index: 50; /* garante que fica em frente do canvas */
+          pointer-events: none; /* permite clicar no canvas por baixo */
+        "
+      />
+      <canvas
+        id="binBlastCanvas"
+        width="1400"
+        height="700"
+        style="border: 2px solid black"
+      >
+        Your browser does not support the HTML5 canvas tag.
+      </canvas>
+    </div>
+
+    <script src="../js/main.js"></script>
+    <div
+      id="nextResidualLabel"
+      style="
+        position: fixed;
+        bottom: 15px;
+        right: 20px;
+        background: white;
+        color: 863228;
+        padding: 8px 12px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-family: Arial, sans-serif;
+        font-size: 16px;
+      "
+    >
+      Próximo:
+      <img
+        id="nextResidualImage"
+        src=""
+        alt="resíduo"
+        width="40"
+        height="40"
+        style="display: none"
+      />
+    </div>
+  </body>
+</html>

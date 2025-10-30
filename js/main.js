@@ -1,5 +1,7 @@
 //-----------------INDEX-----------------//
 //---------------------------------------//
+//-----------------BUTTON-----------------//
+//---------------------------------------//
 document.addEventListener("DOMContentLoaded", () => {
   const btn = document.getElementById("try-game-button");
   if (!btn) return;
@@ -38,6 +40,8 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
+//-----------------CLOUD IMAGES-----------------//
+//---------------------------------------//
 document.addEventListener("DOMContentLoaded", () => {
   const container = document.querySelector(".clouds-images-container");
   if (!container) return;
@@ -101,6 +105,8 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
+//-----------------NAVBAR EXPLANATIONS-----------------//
+//---------------------------------------//
 document.addEventListener("DOMContentLoaded", () => {
   const howLink = document.querySelector('a[href="#how-to-play"]');
   if (!howLink) return;
@@ -131,3 +137,534 @@ document.addEventListener("DOMContentLoaded", () => {
     );
   });
 });
+
+//-----------------GAME-----------------//
+//---------------------------------------//
+//-----------------BUTTON-----------------//
+//---------------------------------------//
+document.addEventListener("DOMContentLoaded", () => {
+  const btn = document.getElementById("goback-game-button");
+  if (!btn) return;
+
+  const innerLink = btn.querySelector("a");
+  const href = innerLink ? innerLink.getAttribute("href") : null;
+
+  let running = false;
+
+  btn.addEventListener("click", (e) => {
+    e.preventDefault();
+    if (running) return;
+    running = true;
+
+    btn.classList.add("sending");
+    btn.style.transform = "scale(1.05)";
+  });
+
+  btn.addEventListener("transitionstart", (e) => {
+    if (e.propertyName === "transform") {
+      btn.textContent = "GOING BACK...";
+    }
+  });
+
+  btn.addEventListener("transitionend", (e) => {
+    if (e.propertyName !== "transform") return;
+
+    btn.style.transform = "scale(1)";
+
+    setTimeout(() => {
+      btn.textContent = "JOINED";
+      setTimeout(() => {
+        if (href) window.location.href = href;
+      }, 350);
+    }, 80);
+  });
+});
+
+//-----------------CANVAS-----------------//
+//---------------------------------------//
+const canvas = document.getElementById("binBlastCanvas");
+const ctx = canvas.getContext("2d");
+
+function fitCanvas() {
+  canvas.width = canvas.clientWidth || 1400;
+  canvas.height = canvas.clientHeight || 700;
+}
+fitCanvas();
+window.addEventListener("resize", () => {
+  fitCanvas();
+});
+
+const STEP = 350;
+const ANIM_DURATION = 250;
+
+function makeImg(src) {
+  const img = new Image();
+  img.src = src;
+  img._loaded = false;
+  img.onload = () => {
+    img._loaded = true;
+  };
+  return img;
+}
+
+//-----------------IMAGES-----------------//
+//---------------------------------------//
+const images = {
+  background: makeImg("../images/streetBackground.png"),
+  cloud: makeImg("../images/cloud.png"),
+  cannon: makeImg("../images/cannon_nobg.png"),
+  bins: {
+    blue: {
+      img: makeImg("../images/blue_trashcan_nobg.png"),
+      noLid: makeImg("../images/blue_trashcan_nobg_nolid.png"),
+      binType: "paper",
+    },
+    red: {
+      img: makeImg("../images/red_trashcan_nobg.png"),
+      noLid: makeImg("../images/red_trashcan_nobg_nolid.png"),
+      binType: "battery",
+    },
+    green: {
+      img: makeImg("../images/green_trashcan_nobg.png"),
+      noLid: makeImg("../images/green_trashcan_nobg_nolid.png"),
+      binType: "glass",
+    },
+    yellow: {
+      img: makeImg("../images/yellow_trashcan_nobg.png"),
+      noLid: makeImg("../images/yellow_trashcan_nobg_nolid.png"),
+      binType: "plasticMetal",
+    },
+  },
+  residuals: {
+    wine: { img: makeImg("../images/residual1.png"), residualType: "glass" },
+    perfume: { img: makeImg("../images/residual2.png"), residualType: "glass" },
+    cocaCola: {
+      img: makeImg("../images/residual3.png"),
+      residualType: "glass",
+    },
+    cocaColaCanFake: {
+      img: makeImg("../images/residual4.png"),
+      residualType: "plasticMetal",
+    },
+    tuna: {
+      img: makeImg("../images/residual5.png"),
+      residualType: "plasticMetal",
+    },
+    waterBottle: {
+      img: makeImg("../images/residual6.png"),
+      residualType: "plasticMetal",
+    },
+    paper: { img: makeImg("../images/residual7.png"), residualType: "paper" },
+    battery1: {
+      img: makeImg("../images/residual10.png"),
+      residualType: "battery",
+    },
+    battery2: {
+      img: makeImg("../images/residual11.png"),
+      residualType: "battery",
+    },
+    battery3: {
+      img: makeImg("../images/residual12.png"),
+      residualType: "battery",
+    },
+  },
+};
+
+//-----------------BINS PART-----------------//
+//---------------------------------------//
+const binIds = ["green", "blue", "yellow", "red"];
+let centerIndex = 1;
+
+let animOffset = 0;
+let animating = false;
+let animStartTime = 0;
+let animFrom = 0;
+let animTo = 0;
+
+function easeOutCubic(t) {
+  return 1 - Math.pow(1 - t, 3);
+}
+
+function slotXs() {
+  const cx = canvas.width / 2;
+  return [cx - STEP, cx, cx + STEP];
+}
+
+function clearCanvas() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  if (images.background._loaded)
+    ctx.drawImage(images.background, 0, 0, canvas.width, canvas.height);
+}
+
+function drawBins() {
+  const xs = slotXs();
+  const n = binIds.length;
+  const left = (centerIndex - 1 + n) % n;
+  const center = centerIndex % n;
+  const right = (centerIndex + 1) % n;
+  const slots = [
+    { x: xs[0] + animOffset, id: binIds[left] },
+    { x: xs[1] + animOffset, id: binIds[center] },
+    { x: xs[2] + animOffset, id: binIds[right] },
+  ];
+  const drawY = 440;
+  slots.forEach((s) => {
+    const entry = images.bins[s.id];
+    if (!entry.img._loaded) return;
+    const centerX = s.x;
+
+    const isCenterSlot = s.id === binIds[center];
+    const useNoLid = entry.noLid._loaded && isCenterSlot;
+    const useImg = useNoLid ? entry.noLid : entry.img;
+
+    const drawW = (useImg.naturalWidth || useImg.width) / 5;
+    const drawH = (useImg.naturalHeight || useImg.height) / 5;
+    const drawX = centerX - drawW / 2;
+    if (drawX + drawW < 0 || drawX > canvas.width) return;
+    ctx.drawImage(useImg, drawX, drawY, drawW, drawH);
+  });
+}
+
+//-----------------CANNON PART-----------------//
+//---------------------------------------//
+function drawCannon() {
+  if (!images.cannon._loaded) return;
+  const img = images.cannon;
+  const drawW = (img.naturalWidth || img.width) / 4;
+  const drawH = (img.naturalHeight || img.height) / 4;
+  const drawX = canvas.width / 2 - drawW / 2;
+  ctx.drawImage(img, drawX, 570, drawW, drawH);
+}
+
+//-----------------CANNON (RESIDUALS) PART-----------------//
+//---------------------------------------//
+let activeResiduals = [];
+let nextResidual = null;
+
+let currentBinResidual = [[], [], [], []];
+
+let scoreMessage = null;
+let scoreMessageTime = 0;
+
+function getRandomResidual() {
+  const residualKeys = Object.keys(images.residuals);
+  const randomKey =
+    residualKeys[Math.floor(Math.random() * residualKeys.length)];
+  return images.residuals[randomKey];
+}
+
+function loadNextResidual() {
+  nextResidual = getRandomResidual();
+  const label = document.getElementById("nextResidualLabel");
+  const imgEl = document.getElementById("nextResidualImage");
+  if (label) {
+    label.style.background = "white";
+    label.style.color = "#863228";
+    label.style.display = "flex";
+    label.style.alignItems = "center";
+    label.style.gap = "8px";
+  }
+  if (imgEl && nextResidual) {
+    imgEl.src = nextResidual.img.src;
+    imgEl.style.display = "inline-block";
+  }
+}
+
+loadNextResidual();
+
+function updateNextResidualUI() {
+  const label = document.getElementById("nextResidualLabel");
+  const imgEl = document.getElementById("nextResidualImage");
+  if (!label || !imgEl) return false;
+
+  label.style.background = "white";
+  label.style.color = "#863228";
+  label.style.display = "flex";
+  label.style.alignItems = "center";
+  label.style.gap = "8px";
+
+  if (nextResidual && nextResidual.img && nextResidual.img._loaded) {
+    imgEl.src = nextResidual.img.src;
+    imgEl.style.display = "inline-block";
+  } else if (nextResidual && nextResidual.img) {
+    imgEl.src = nextResidual.img.src;
+    imgEl.style.display = "inline-block";
+    nextResidual.img.onload = () => {
+      imgEl.style.display = "inline-block";
+    };
+  }
+  return true;
+}
+
+if (!updateNextResidualUI()) {
+  document.addEventListener(
+    "DOMContentLoaded",
+    () => {
+      updateNextResidualUI();
+    },
+    { once: true }
+  );
+}
+
+function fireResidual() {
+  if (!nextResidual) loadNextResidual();
+  const residualData = nextResidual;
+  if (!residualData) return;
+
+  const img = residualData.img;
+
+  const startX = canvas.width / 2;
+  const startY = 570;
+
+  const xs = slotXs();
+  const centerBinX = xs[1];
+
+  const speed = 12;
+  const velocityX = centerBinX > startX ? speed : -speed;
+  const velocityY = 0;
+
+  activeResiduals.push({
+    x: startX,
+    y: startY,
+    img,
+    type: residualData.residualType,
+    velocityX,
+    velocityY,
+    targetBinX: centerBinX,
+  });
+
+  loadNextResidual();
+}
+
+//-----------------CLOUDS-----------------//
+//---------------------------------------//
+let canvasClouds = [];
+let cloudsInited = false;
+let _lastCloudUpdate = performance.now();
+
+function initCanvasClouds(count = 4) {
+  canvasClouds = [];
+  function rand(min, max) {
+    return Math.random() * (max - min) + min;
+  }
+
+  const bands = [
+    { min: 0.06, max: 0.18 },
+    { min: 0.32, max: 0.5 },
+  ];
+
+  for (let i = 0; i < count; i++) {
+    const band = bands[i % bands.length];
+    const size = Math.round(rand(80, 220));
+    const aX = Math.round(rand(-300, 50));
+    const bX = Math.round(rand(canvas.width - 50, canvas.width + 300));
+    const y = Math.round(
+      rand(canvas.height * band.min, canvas.height * band.max)
+    );
+    const duration = Math.round(rand(4000, 12000));
+    const startT = Math.random();
+    const dir = Math.random() < 0.5 ? 1 : -1;
+    const opacity = rand(0.65, 1);
+
+    canvasClouds.push({
+      a: { x: aX, y },
+      b: { x: bX, y },
+      t: startT,
+      dir,
+      size,
+      duration,
+      opacity,
+    });
+  }
+}
+
+function drawCanvasClouds() {
+  if (!images.cloud._loaded) return;
+
+  if (!cloudsInited) {
+    initCanvasClouds(3);
+    cloudsInited = true;
+    _lastCloudUpdate = performance.now();
+  }
+
+  const now = performance.now();
+  const dt = now - _lastCloudUpdate;
+  _lastCloudUpdate = now;
+
+  const img = images.cloud;
+  const imgW = img.naturalWidth || img.width || 1;
+  const imgH = img.naturalHeight || img.height || imgW * 0.5;
+
+  for (const c of canvasClouds) {
+    c.t += (dt / c.duration) * c.dir;
+    if (c.t >= 1) {
+      c.t = 1;
+      c.dir = -1;
+    } else if (c.t <= 0) {
+      c.t = 0;
+      c.dir = 1;
+    }
+
+    const x = c.a.x + (c.b.x - c.a.x) * c.t;
+    const y = c.a.y;
+
+    const drawW = c.size;
+    const drawH = Math.round((imgH / imgW) * drawW);
+
+    ctx.save();
+    ctx.globalAlpha = c.opacity;
+    ctx.drawImage(img, x - drawW / 2, y - drawH / 2, drawW, drawH);
+    ctx.restore();
+  }
+}
+
+//-----------------FUNCTION THAT CALLS ALL THE DRAWING FUNCTIONS-----------------//
+//---------------------------------------//
+function drawAll() {
+  clearCanvas();
+  drawBins();
+  drawCannon();
+  drawCanvasClouds();
+}
+
+//-----------------FUNCTION TO RENDER EVERYTHING-----------------//
+//---------------------------------------//
+function render(timestamp) {
+  if (animating) {
+    if (!animStartTime) animStartTime = timestamp;
+    const elapsed = timestamp - animStartTime;
+    const t = Math.min(1, elapsed / ANIM_DURATION);
+    const eased = easeOutCubic(t);
+    animOffset = animFrom + (animTo - animFrom) * eased;
+
+    if (t >= 1) {
+      if (animTo < animFrom) {
+        centerIndex = (centerIndex + 1) % binIds.length;
+      } else if (animTo > animFrom) {
+        centerIndex = (centerIndex - 1 + binIds.length) % binIds.length;
+      }
+      animOffset = 0;
+      animating = false;
+      animStartTime = 0;
+      animFrom = 0;
+      animTo = 0;
+    }
+  }
+
+  drawAll();
+
+  if (activeResiduals.length) {
+    for (let i = activeResiduals.length - 1; i >= 0; i--) {
+      const r = activeResiduals[i];
+      r.x += r.velocityX;
+      r.y += r.velocityY;
+
+      if (r.img._loaded) {
+        const w = (r.img.naturalWidth || r.img.width) / 5;
+        const h = (r.img.naturalHeight || r.img.height) / 5;
+        ctx.drawImage(r.img, r.x - w / 2, r.y - h / 2, w, h);
+      }
+
+      const xs = slotXs();
+      const centerBinX = xs[1];
+
+      if (
+        (r.velocityX > 0 && r.x >= centerBinX) ||
+        (r.velocityX < 0 && r.x <= centerBinX)
+      ) {
+        r.x = centerBinX;
+        r.velocityX = 0;
+        r.velocityY = 0;
+
+        const binId = binIds[centerIndex % binIds.length];
+        const binType = images.bins[binId].binType;
+
+        currentBinResidual[centerIndex].push({
+          imgSrc: r.img.src,
+          type: r.type,
+          placedAt: performance.now(),
+        });
+
+        //-----------------MESSAGES-----------------//
+        //---------------------------------------//
+        if (r.type === binType) {
+          scoreMessage = { text: "Muito bem!", color: "green" };
+        } else {
+          scoreMessage = { text: "Errado!!!", color: "red" };
+        }
+        scoreMessageTime = performance.now();
+
+        activeResiduals.splice(i, 1);
+      }
+    }
+  }
+
+  if (scoreMessage) {
+    const elapsed = timestamp - scoreMessageTime;
+    if (elapsed < 1000) {
+      ctx.font = "40px Arial";
+      ctx.fillStyle = scoreMessage.color;
+      ctx.textAlign = "center";
+      ctx.fillText(scoreMessage.text, canvas.width / 2, 200);
+    } else {
+      scoreMessage = null;
+    }
+  }
+
+  requestAnimationFrame(render);
+}
+
+//-----------------END OF THE RENDER FUNCTION-----------------//
+//---------------------------------------//
+requestAnimationFrame(render);
+
+//-----------------EVENTS (BINS)-----------------//
+//---------------------------------------//
+window.addEventListener("keydown", (e) => {
+  if (animating) return;
+  if (e.key === "ArrowRight") {
+    e.preventDefault();
+    animating = true;
+    animStartTime = 0;
+    animFrom = 0;
+    animTo = -STEP;
+  } else if (e.key === "ArrowLeft") {
+    e.preventDefault();
+    animating = true;
+    animStartTime = 0;
+    animFrom = 0;
+    animTo = +STEP;
+  }
+});
+
+//-----------------EVENTS (CANNON)-----------------//
+//---------------------------------------//
+window.addEventListener("keydown", (e) => {
+  if (e.code === "Space" || e.key === " ") {
+    e.preventDefault();
+    fireResidual();
+  }
+});
+
+//-----------------VARIABLES + CLASSES FOR THE BINS AND THE RESIDUALS-----------------//
+//---------------------------------------//
+const currentBin = ["green", "blue", "yellow", "red"];
+const currentResidual = [
+  "glass",
+  "paper",
+  "plastic",
+  "plasticMetal",
+  "battery",
+];
+
+class Bin {
+  constructor(binType) {
+    this.binType = binType;
+  }
+}
+
+class Residual {
+  constructor(residualType) {
+    this.residualType = residualType;
+  }
+}

@@ -3,9 +3,11 @@
   margin: 0;
   background: linear-gradient(180deg, #2eccde 39%, #58f5eb 61%);
   background-attachment: fixed;
+  overflow-y: hidden;
+  overflow-x: hidden;
 }
 
-#body-game {
+/* #body-game {
   min-height: 100vh;
   margin: 0;
   background: linear-gradient(
@@ -16,6 +18,12 @@
   );
 
   background-attachment: fixed;
+} */
+
+#body-game {
+  overflow-y: hidden;
+  overflow-x: hidden;
+  background: linear-gradient(180deg, #2eccde 39%, #58f5eb 61%);
 }
 
 /* ------------------------ CANVAS STYLES ------------------------ */
@@ -23,7 +31,7 @@
 canvas {
   display: block;
   margin: 0 auto;
-  margin-top: 50px;
+  margin-top: 30px;
   margin-bottom: 50px;
 }
 
@@ -190,4 +198,51 @@ canvas {
   100% {
     transform: translateX(1100%);
   }
+}
+
+#goback-game-button {
+  display: inline-flex;
+  padding: 9px 38px;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  border: 2px solid #863228;
+  background: #fff;
+  color: #863228;
+  cursor: pointer;
+  transition: transform 420ms ease, background-color 220ms ease,
+    color 220ms ease, border-color 220ms ease;
+  transform-origin: center center;
+  -webkit-tap-highlight-color: transparent;
+  border-radius: 6px;
+  box-sizing: border-box;
+  font-family: "Jersey 10", system-ui, -apple-system, "Segoe UI", Roboto, Arial,
+    sans-serif;
+  margin-left: 50px;
+  margin-top: 45px;
+}
+
+#goback-game-button a {
+  color: inherit;
+  text-decoration: none;
+  display: inline-block;
+  width: 100%;
+  height: 100%;
+  line-height: inherit;
+}
+
+#goback-game-button.active {
+  background: #863228;
+  color: #fff;
+  border-color: #fff;
+  transform: rotate(360deg);
+}
+
+#goback-game-button:active {
+  transform: scale(0.98);
+}
+
+#goback-game-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(134, 50, 40, 0.12);
 }
