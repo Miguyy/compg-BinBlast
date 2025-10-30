@@ -14,6 +14,7 @@
     <link rel="icon" href="../images/logo.png" type="image/x-icon" />
   </head>
   <body id="body-game">
+    <!-- BUTTON -->
     <div>
       <button id="goback-game-button">
         <a href="../html/index.html">← GO BACK</a>
@@ -28,13 +29,14 @@
           position: absolute;
           left: 50%;
           transform: translateX(-50%);
-          top: 50px; /* distancia acima do canvas: ajusta conforme necessário */
-          width: 200; /* ou usar max-width: 20%; para responsivo */
+          top: 50px;
+          width: 200;
           height: auto;
-          z-index: 50; /* garante que fica em frente do canvas */
-          pointer-events: none; /* permite clicar no canvas por baixo */
+          z-index: 50;
+          pointer-events: none;
         "
       />
+      <!-- CANVAS -->
       <canvas
         id="binBlastCanvas"
         width="1400"
@@ -46,6 +48,7 @@
     </div>
 
     <script src="../js/main.js"></script>
+    <!-- LABEL NEXT RESIDUAL -->
     <div
       id="nextResidualLabel"
       style="
