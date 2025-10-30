@@ -44,6 +44,6 @@
 ## 👨‍💻 Créditos
 
 - Desenvolvido por:
-  Miguel Machado - https://github.com/Miguyy;
-  Manuel Teixeira - https://github.com/Manutex78.
+  - Miguel Machado - https://github.com/Miguyy
+  - Manuel Teixeira - https://github.com/Manutex78.
 - Para a disciplina de Computação Gráfica no Instituto Politécnico do Porto - ESMAD
