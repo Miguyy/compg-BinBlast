@@ -34,6 +34,14 @@
 - **Pontuação visual** ao acertar ou errar
 
 ---
+## 🛠️ Ferramentas
+
+- **JavaScript**
+- **CSS**
+- **HTML**
+- **BOOTSTRAP** - https://getbootstrap.com/
+
+---
 
 ## 🛠️ Instalação e Execução
 
