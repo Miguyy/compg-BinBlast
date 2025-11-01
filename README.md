@@ -52,6 +52,8 @@
 2. Open the index.html file in your browser.
 3. Click the “Try the game” button to launch BinBlast and allow your browser to use your camera, if desired.
 
+---
+
 ## 👨‍💻 Credits
 
 - Developed by:
