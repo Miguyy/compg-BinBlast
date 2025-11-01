@@ -255,6 +255,11 @@ const images = {
       residualType: "plasticMetal",
     },
     paper: { img: makeImg("../images/residual7.png"), residualType: "paper" },
+    box: { img: makeImg("../images/residual8.png"), residualType: "paper" },
+    toiletPaper: {
+      img: makeImg("../images/residual9.png"),
+      residualType: "paper",
+    },
     battery1: {
       img: makeImg("../images/residual10.png"),
       residualType: "battery",
@@ -588,9 +593,9 @@ function render(timestamp) {
         //-----------------MESSAGES-----------------//
         //---------------------------------------//
         if (r.type === binType) {
-          scoreMessage = { text: "Muito bem!", color: "green" };
+          scoreMessage = { text: "Acertaste!!!", color: "green" };
         } else {
-          scoreMessage = { text: "Errado!!!", color: "red" };
+          scoreMessage = { text: "Erraste!!!", color: "red" };
         }
         scoreMessageTime = performance.now();
 
