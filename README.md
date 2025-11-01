@@ -1,57 +1,60 @@
 # BinBlast 🎯♻️
 
-**BinBlast** é um jogo educativo desenvolvido para a disciplina de Computação Gráfica do Instituto Politécnico do Porto - ESMAD. O objetivo do jogo é promover a consciência ambiental e a importância da reciclagem, de forma divertida e interativa.
+**BinBlast** is an educational game developed for the Computer Graphics course at the Polytechnic Institute of Porto - ESMAD. The aim of the game is to promote environmental awareness and the importance of recycling in a fun and interactive way.
 
 ---
 
-## 🕹️ Como Jogar
+## 🕹️ How to Play
 
-- Usa as **setas do teclado** para mover os caixotes de lixo (esquerda/direita).
-- Carrega na **barra de espaço** para lançar o resíduo.
-- O objetivo é **reciclar o máximo de resíduos possível**!
-- Cada resíduo tem de ser colocado no **caixote correto**:
-  - Azul → Papel
-  - Vermelho → Bateria
-  - Verde → Vidro
-  - Amarelo → Plástico
+- Use the **arrow keys** to move the bins (left/right).
+- Press the **space bar** to throw the rubbish.
+- Or use gestures with your left index finger to move the bins and your right hand to throw.
+- The goal is to **recycle as much waste as possible**!
+- Each piece of waste must be placed in the **correct bin**:
+  - Blue → Paper
+  - Red → Batteries
+  - Green → Glass
+  - Yellow → Plastic
+    
+---
+
+## 🎨 Visual Resources
+
+- Street background
+- Animated clouds in the sky
+- Cannon for shooting rubbish
+- Interactive rubbish bins
 
 ---
 
-## 🎨 Recursos Visuais
+## ⚙️ Features
 
-- Fundo de rua
-- Nuvens animadas no céu
-- Canhão para disparar resíduos
-- Caixotes de lixo interativos
-
+- **Animation of bins** when changing position
+- **Waste stored** in bins
+- **Next visible waste** in the bottom right corner
+- **Visual score** when hitting or missing
+  
 ---
 
-## ⚙️ Funcionalidades
-
-- **Animação dos caixotes** ao mudar de posição
-- **Resíduos armazenados** nos caixotes mesmo que o jogador erre
-- **Próximo resíduo visível** no canto inferior direito
-- **Pontuação visual** ao acertar ou errar
-
----
-## 🛠️ Ferramentas
+## 🛠️ Tools
 
 - **JavaScript**
 - **CSS**
 - **HTML**
 - **BOOTSTRAP** - https://getbootstrap.com/
+- **ML5.JS** - https://ml5js.org/
 
 ---
 
-## 🛠️ Instalação e Execução
+## 🛠️ Install and Execution
 
-1. Clona este repositório: git clone <url-do-repositório>.
-2. Abre o index.html no browser.
-3. Clica no botão "Try Game" para iniciar o BinBlast.
+1. Clone this repository: git clone <repository-url>.
+2. Open the index.html file in your browser.
+3. Click the “Try the game” button to launch BinBlast and allow your browser to use your camera, if desired.
 
-## 👨‍💻 Créditos
+## 👨‍💻 Credits
 
-- Desenvolvido por:
+- Developed by:
   - Miguel Machado - https://github.com/Miguyy
-  - Manuel Teixeira - https://github.com/Manutex78.
-- Para a disciplina de Computação Gráfica no Instituto Politécnico do Porto - ESMAD
+  - Manuel Teixeira - https://github.com/Manutex78
+- For the Computer Graphics course at the Polytechnic Institute of Porto - ESMAD
