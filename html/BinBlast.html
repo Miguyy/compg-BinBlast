@@ -11,49 +11,33 @@
       integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
       crossorigin="anonymous"
     />
+    <link rel="icon" href="../images/logo.png" type="image/x-icon" />
+    <script src="https://unpkg.com/ml5@latest/dist/ml5.min.js"></script>
   </head>
-  <style></style>
   <body id="body-game">
-    <nav class="navbar navbar-expand-lg navbar-light bg-transparent">
-      <div class="container-fluid">
-        <a href="../html/index.html"
-          ><img
-            src="../images/icon.png"
-            alt="BinBlast Icon"
-            width="190"
-            height="130"
-            style="margin-left: 20px"
-        /></a>
-
-        <button
-          class="navbar-toggler"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#navbarNav"
-          aria-controls="navbarNav"
-          aria-expanded="false"
-          aria-label="Toggle navigation"
-        >
-          <span class="navbar-toggler-icon"></span>
-        </button>
-
-        <div class="collapse navbar-collapse" id="navbarNav">
-          <ul class="navbar-nav ms-auto">
-            <li class="nav-item">
-              <a class="nav-link" href="#how-to-play">HOW TO PLAY</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#about">ABOUT</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#credits">CREDITS</a>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </nav>
-
+    <!-- BUTTON -->
+    <div>
+      <button id="goback-game-button">
+        <a href="../html/index.html">← GO BACK</a>
+      </button>
+    </div>
     <div id="centerCanvas">
+      <img
+        id="overlayImage"
+        src="../images/icon.png"
+        alt="overlay"
+        style="
+          position: absolute;
+          left: 50%;
+          transform: translateX(-50%);
+          top: 50px;
+          width: 200;
+          height: auto;
+          z-index: 50;
+          pointer-events: none;
+        "
+      />
+      <!-- CANVAS -->
       <canvas
         id="binBlastCanvas"
         width="1400"
@@ -62,40 +46,62 @@
       >
         Your browser does not support the HTML5 canvas tag.
       </canvas>
+      <video
+        id="video"
+        width="640"
+        height="480"
+        autoplay
+        playsinline
+        style="display: none"
+      ></video>
+      <canvas
+        id="videoCanvas"
+        width="300"
+        height="220"
+        style="
+          position: absolute;
+          right: 12px;
+          top: 80px;
+          width: 300px;
+          height: 220px;
+          border: 2px solid rgba(0, 0, 0, 0.6);
+          border-radius: 8px;
+          background: rgba(0, 0, 0, 1);
+          z-index: 60;
+          pointer-events: none;
+        "
+      ></canvas>
     </div>
 
-    <script src="../js/script.js"></script>
-    <script>
-      document.addEventListener("DOMContentLoaded", () => {
-        const howLink = document.querySelector('a[href="#how-to-play"]');
-        if (!howLink) return;
-        howLink.addEventListener("click", (e) => {
-          e.preventDefault();
-          alert(
-            "Usa as setas do teclado para apontares para onde queres lançar o resíduo. Carrega na barra de espaço para lançares o resíduo. O objectivo é reciclar o máximo de resíduos possível!!"
-          );
-        });
-      });
-      document.addEventListener("DOMContentLoaded", () => {
-        const howLink = document.querySelector('a[href="#about"]');
-        if (!howLink) return;
-        howLink.addEventListener("click", (e) => {
-          e.preventDefault();
-          alert(
-            "BinBlast é um jogo educativo desenvolvido para a disciplina de Computação Gráfica do Instituto Politécnico do Porto - ESMAD. O objetivo do jogo é promover a consciência ambiental e a importância da reciclagem, proporcionando uma experiência divertida e interativa aos jogadores."
-          );
-        });
-      });
-      document.addEventListener("DOMContentLoaded", () => {
-        const howLink = document.querySelector('a[href="#credits"]');
-        if (!howLink) return;
-        howLink.addEventListener("click", (e) => {
-          e.preventDefault();
-          alert(
-            "Desenvolvido por Miguel Machado e Manuel Teixeira para a cadeira de Computação Gráfica do Instituto Politécnico do Porto - ESMAD."
-          );
-        });
-      });
-    </script>
+    <!-- LABEL NEXT RESIDUAL -->
+    <div
+      id="nextResidualLabel"
+      style="
+        position: fixed;
+        bottom: 15px;
+        right: 20px;
+        background: white;
+        color: 863228;
+        padding: 8px 12px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-family: Arial, sans-serif;
+        font-size: 16px;
+      "
+    >
+      Próximo:
+      <img
+        id="nextResidualImage"
+        src=""
+        alt="resíduo"
+        width="40"
+        height="40"
+        style="display: none"
+      />
+    </div>
+
+    <script src="../js/main.js"></script>
   </body>
 </html>
