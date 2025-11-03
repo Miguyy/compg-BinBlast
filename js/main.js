@@ -712,9 +712,9 @@ function render2() {
       if (indexTip) {
         circleX2 += (indexTip.x - circleX2) * smoothing2;
         circleY2 += (indexTip.y - circleY2) * smoothing2;
-        ctx2.fillStyle = "white";
+        ctx2.fillStyle = "#863228"; 
         ctx2.beginPath();
-        ctx2.arc(circleX2, circleY2, 6, 0, 2 * Math.PI);
+        ctx2.arc(circleX2, circleY2, 8, 0, 2 * Math.PI);
         ctx2.fill();
       }
 
@@ -739,7 +739,7 @@ function render2() {
             setTimeout(() => {
               render2.movedRecently = false;
               animating = false;
-            }, 800);
+            }, 400);
           } else if (angleDeg >= 135 && angleDeg <= 225 && !animating) {
             animating = true;
             animStartTime = 0;
@@ -749,7 +749,7 @@ function render2() {
             setTimeout(() => {
               render2.movedRecently = false;
               animating = false;
-            }, 800);
+            }, 400);
           }
         }
       }
