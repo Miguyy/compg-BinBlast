@@ -272,6 +272,82 @@ const images = {
       img: makeImg("../images/residual12.png"),
       residualType: "battery",
     },
+    glassOfWater: {
+      img: makeImg("../images/residual13.png"),
+      residualType: "glass",
+    },
+    battery4: {
+      img: makeImg("../images/residual14.png"),
+      residualType: "battery",
+    },
+    cereals: {
+      img: makeImg("../images/residual15.png"),
+      residualType: "paper",
+    },
+    emptyBottle: {
+      img: makeImg("../images/residual16.png"),
+      residualType: "glass",
+    },
+    wine2: {
+      img: makeImg("../images/residual17.png"),
+      residualType: "glass",
+    },
+    spray: {
+      img: makeImg("../images/residual18.png"),
+      residualType: "plasticMetal",
+    },
+    emptyEggCarton: {
+      img: makeImg("../images/residual19.png"),
+      residualType: "paper",
+    },
+    perfume2: {
+      img: makeImg("../images/residual20.png"),
+      residualType: "glass",
+    },
+    envelope: {
+      img: makeImg("../images/residual21.png"),
+      residualType: "paper",
+    },
+    box2: {
+      img: makeImg("../images/residual22.png"),
+      residualType: "paper",
+    },
+    newspaper: {
+      img: makeImg("../images/residual23.png"),
+      residualType: "paper",
+    },
+    paper2: {
+      img: makeImg("../images/residual24.png"),
+      residualType: "paper",
+    },
+    emptyBottle2: {
+      img: makeImg("../images/residual25.png"),
+      residualType: "plasticMetal",
+    },
+    emptyPotion: {
+      img: makeImg("../images/residual26.png"),
+      residualType: "glass",
+    },
+    spring: {
+      img: makeImg("../images/residual27.png"),
+      residualType: "plasticMetal",
+    },
+    can: {
+      img: makeImg("../images/residual28.png"),
+      residualType: "plasticMetal",
+    },
+    emptyBag: {
+      img: makeImg("../images/residual29.png"),
+      residualType: "plasticMetal",
+    },
+    cup: {
+      img: makeImg("../images/residual30.png"),
+      residualType: "plasticMetal",
+    },
+    waterBottle2: {
+      img: makeImg("../images/residual31.png"),
+      residualType: "plasticMetal",
+    },
   },
 };
 
@@ -712,7 +788,7 @@ function render2() {
       if (indexTip) {
         circleX2 += (indexTip.x - circleX2) * smoothing2;
         circleY2 += (indexTip.y - circleY2) * smoothing2;
-        ctx2.fillStyle = "#863228"; 
+        ctx2.fillStyle = "#863228";
         ctx2.beginPath();
         ctx2.arc(circleX2, circleY2, 8, 0, 2 * Math.PI);
         ctx2.fill();
