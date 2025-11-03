@@ -599,6 +599,81 @@ function drawCanvasClouds() {
   }
 }
 
+//-----------------FUNCTION TRIGGER DAMAGE EFFECT-----------------//
+//---------------------------------------//
+let damageAlpha = 0;
+let damageActive = false;
+
+function triggerDamageEffect() {
+  damageAlpha = 0.6;
+  damageActive = true;
+}
+
+//-----------------FUNCTION CLEAR TRIGGER DAMAGE EFFECT-----------------//
+//---------------------------------------//
+function clearDamageEffect() {
+  damageAlpha = 0;
+  damageActive = false;
+}
+
+//-----------------FUNCTION FIREWORKS EFFECT-----------------//
+//---------------------------------------//
+//-----------------VARIABLES + CLASSES FOR THE FIREWORKS-----------------//
+//---------------------------------------//
+let fireworks = [];
+let fireworksActive = false;
+let fireworksEndTime = 0;
+
+class FireParticle {
+  constructor(x, y, color) {
+    this.x = x;
+    this.y = y;
+    this.color = color;
+    this.vx = (Math.random() - 0.5) * 12;
+    this.vy = (Math.random() - 0.5) * 12;
+    this.alpha = 1;
+  }
+  update() {
+    this.x += this.vx;
+    this.y += this.vy;
+    this.vy += 0.05;
+    this.alpha -= 0.02;
+  }
+  draw(ctx) {
+    ctx.globalAlpha = this.alpha;
+    ctx.fillStyle = this.color;
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, 4, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.globalAlpha = 1;
+  }
+}
+
+function spawnFirework(x, y) {
+  const colors = [
+    "#ff4040",
+    "#ffbf00",
+    "#00ff66",
+    "#00b3ff",
+    "#ff00ff",
+    "#ffffff",
+  ];
+  for (let i = 0; i < 60; i++) {
+    const color = colors[Math.floor(Math.random() * colors.length)];
+    fireworks.push(new FireParticle(x, y, color));
+  }
+}
+
+function startFireworks(duration = 2000) {
+  fireworksActive = true;
+  fireworksEndTime = performance.now() + duration;
+}
+
+function stopFireworks() {
+  fireworksActive = false;
+  fireworks = [];
+}
+
 //-----------------FUNCTION THAT CALLS ALL THE DRAWING FUNCTIONS-----------------//
 //---------------------------------------//
 function drawAll() {
@@ -669,9 +744,13 @@ function render(timestamp) {
         //-----------------MESSAGES-----------------//
         //---------------------------------------//
         if (r.type === binType) {
-          scoreMessage = { text: "Acertaste!!!", color: "green" };
+          clearDamageEffect();
+          scoreMessage = { text: "Great job!!!", color: "green" };
+          startFireworks();
         } else {
-          scoreMessage = { text: "Erraste!!!", color: "red" };
+          stopFireworks();
+          scoreMessage = { text: "Not looking good!!!", color: "red" };
+          triggerDamageEffect();
         }
         scoreMessageTime = performance.now();
 
@@ -689,6 +768,38 @@ function render(timestamp) {
       ctx.fillText(scoreMessage.text, canvas.width / 2, 200);
     } else {
       scoreMessage = null;
+    }
+  }
+
+  if (damageActive) {
+    ctx.save();
+    ctx.fillStyle = `rgba(255, 0, 0, ${damageAlpha})`;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.restore();
+
+    damageAlpha -= 0.005;
+    if (damageAlpha <= 0) {
+      damageAlpha = 0;
+      damageActive = false;
+    }
+  }
+
+  if (fireworksActive) {
+    ctx.fillStyle = "rgba(0,0,0,0.15)";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    fireworks.forEach((p) => p.update());
+    fireworks = fireworks.filter((p) => p.alpha > 0);
+    fireworks.forEach((p) => p.draw(ctx));
+
+    if (performance.now() < fireworksEndTime) {
+      if (Math.random() < 0.08) {
+        const x = Math.random() * canvas.width;
+        const y = Math.random() * canvas.height * 0.5;
+        spawnFirework(x, y);
+      }
+    } else if (fireworks.length === 0) {
+      fireworksActive = false;
     }
   }
 
