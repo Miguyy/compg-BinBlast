@@ -113,7 +113,7 @@ document.addEventListener("DOMContentLoaded", () => {
   howLink.addEventListener("click", (e) => {
     e.preventDefault();
     alert(
-      "Usa as setas do teclado para apontares para onde queres lançar o resíduo. Carrega na barra de espaço para lançares o resíduo. O objectivo é reciclar o máximo de resíduos possível!!"
+      "Use the arrow keys or your left index finger to aim where you want to throw the rubbish. Press the space bar  or use your right hand to throw the rubbish. The goal is to recycle as much rubbish as possible! "
     );
   });
 });
@@ -123,7 +123,7 @@ document.addEventListener("DOMContentLoaded", () => {
   howLink.addEventListener("click", (e) => {
     e.preventDefault();
     alert(
-      "BinBlast é um jogo educativo desenvolvido para a disciplina de Computação Gráfica do Instituto Politécnico do Porto - ESMAD. O objetivo do jogo é promover a consciência ambiental e a importância da reciclagem, proporcionando uma experiência divertida e interativa aos jogadores."
+      "BinBlast is an educational game developed for the Computer Graphics course at the Polytechnic Institute of Porto - ESMAD. The aim of the game is to promote environmental awareness and the importance of recycling, providing players with a fun and interactive experience."
     );
   });
 });
@@ -133,7 +133,7 @@ document.addEventListener("DOMContentLoaded", () => {
   howLink.addEventListener("click", (e) => {
     e.preventDefault();
     alert(
-      "Desenvolvido por Miguel Machado e Manuel Teixeira para a cadeira de Computação Gráfica do Instituto Politécnico do Porto - ESMAD."
+      "Developed by Miguel Machado and Manuel Teixeira for the Computer Graphics course at the Polytechnic Institute of Porto - ESMAD."
     );
   });
 });
@@ -228,6 +228,7 @@ function startGameTimer() {
 }
 
 //-----------------START-GAME OVERLAY-----------------//
+//----------------------------------//
 
 let _startGameShow = true;
 
@@ -282,9 +283,6 @@ document.addEventListener("DOMContentLoaded", () => {
     showStartGameDialog();
   }
 });
-
-//----------------------------------//
-
 
 // ---------- END-GAME OVERLAY ---------- //
 //----------------------------------//
@@ -342,13 +340,6 @@ function showEndDialog() {
   restartBtn.className = "try-game-button";
   restartBtn.style.cursor = "pointer";
   restartBtn.innerHTML = `<button id="try-game-button"><a href="#">Restart</a></button>`;
-
-  /* [leaveBtn, restartBtn].forEach((b) => {
-    b.style.display = "inline-flex";
-    b.style.alignItems = "center";
-    b.style.justifyContent = "center";
-    b.style.padding = "6px 2px";
-  }); */
 
   actions.appendChild(restartBtn);
   actions.appendChild(leaveBtn);
