@@ -227,6 +227,65 @@ function startGameTimer() {
   }, 1000);
 }
 
+//-----------------START-GAME OVERLAY-----------------//
+
+let _startGameShow = true;
+
+function showStartGameDialog() {
+  if (!_startGameShow) return;
+  _startGameShow = false;
+
+  const startOverlay = document.createElement("div");
+  startOverlay.id = "gameStartOverlay";
+  Object.assign(startOverlay.style, {
+    position: "fixed",
+    left: "0",
+    top: "0",
+    width: "100%",
+    height: "100%",
+    background: "rgba(0,0,0,0.6)",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    zIndex: "9999",
+    pointerEvents: "auto",
+  });
+
+  const startPanel = document.createElement("div");
+  startPanel.id = "gameStartPanel";
+  Object.assign(startPanel.style, {
+    background: "#fff",
+    padding: "24px",
+    borderRadius: "8px",
+    minWidth: "320px",
+    textAlign: "center",
+  });
+
+  const startMsg = document.createElement("p");
+  startMsg.id = "startGameText";
+  startMsg.textContent = `Get ready! The game is about to start!`;
+  startMsg.style.marginBottom = "18px";
+  startMsg.style.fontSize = "18px";
+  startMsg.style.color = "#000";
+  startPanel.appendChild(startMsg);
+  startOverlay.appendChild(startPanel);
+  document.body.appendChild(startOverlay);
+  setTimeout(() => {
+    startOverlay.remove();
+    resetGame();
+  }, 5000);
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  const body = document.body;
+  if (body && body.id === "body-game") {
+    showStartGameDialog();
+  }
+});
+
+//----------------------------------//
+
+
 // ---------- END-GAME OVERLAY ---------- //
 //----------------------------------//
 let _endDialogShown = false;
@@ -970,10 +1029,6 @@ function render(timestamp) {
 //-----------------END OF THE RENDER FUNCTION-----------------//
 //---------------------------------------//
 requestAnimationFrame(render);
-
-document.addEventListener("DOMContentLoaded", () => {
-  resetGame(); // start timer, reset score, streak
-});
 
 //-----------------EVENTS (BINS)-----------------//
 //---------------------------------------//
