@@ -97,35 +97,37 @@
           pointer-events: none;
         "
       ></canvas>
-    </div>
-
-    <!-- LABEL NEXT RESIDUAL -->
-    <div
-      id="nextResidualLabel"
-      style="
-        position: fixed;
-        bottom: 15px;
-        right: 20px;
-        background: white;
-        color: 863228;
-        padding: 8px 12px;
-        border-radius: 10px;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        font-family: Arial, sans-serif;
-        font-size: 16px;
-      "
-    >
-      Próximo:
-      <img
-        id="nextResidualImage"
-        src=""
-        alt="resíduo"
-        width="40"
-        height="40"
-        style="display: none"
-      />
+      <!-- LABEL NEXT RESIDUAL -->
+      <div
+        id="nextResidualLabel"
+        style="
+          position: absolute;
+          bottom: 60px;
+          right: 270px;
+          background: white;
+          color: #863228;
+          padding: 8px 12px;
+          border-radius: 10px;
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          font-family: Arial, sans-serif;
+          font-weight: bold;
+          font-size: 20px;
+          border: 2px solid black;
+          z-index: 80;
+        "
+      >
+        NEXT RESIDUAL:
+        <img
+          id="nextResidualImage"
+          src=""
+          alt="resíduo"
+          width="70"
+          height="70"
+          style="display: none"
+        />
+      </div>
     </div>
 
     <script src="../js/main.js"></script>

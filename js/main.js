@@ -497,6 +497,7 @@ function loadNextResidual() {
   if (label) {
     label.style.background = "white";
     label.style.color = "#863228";
+    label.style.border = "2px solid black";
     label.style.display = "flex";
     label.style.alignItems = "center";
     label.style.gap = "8px";
@@ -552,22 +553,25 @@ function fireResidual() {
 
   const startX = canvas.width / 2;
   const startY = 570;
-
   const xs = slotXs();
   const centerBinX = xs[1];
+  const targetY = 440;
 
-  const speed = 12;
-  const velocityX = centerBinX > startX ? speed : -speed;
-  const velocityY = 0;
+  const controlX = (startX + centerBinX) / 2;
+  const controlY = canvas.height * 0.3;
 
   activeResiduals.push({
-    x: startX,
-    y: startY,
     img,
     type: residualData.residualType,
-    velocityX,
-    velocityY,
-    targetBinX: centerBinX,
+    startX,
+    startY,
+    controlX,
+    controlY,
+    targetX: centerBinX,
+    targetY,
+    t: 0,
+    duration: 800 + Math.random() * 400,
+    startTime: performance.now(),
   });
 
   loadNextResidual();
@@ -768,8 +772,20 @@ function render(timestamp) {
   if (activeResiduals.length) {
     for (let i = activeResiduals.length - 1; i >= 0; i--) {
       const r = activeResiduals[i];
-      r.x += r.velocityX;
-      r.y += r.velocityY;
+      const elapsed = timestamp - r.startTime;
+      r.t = Math.min(1, elapsed / r.duration);
+
+      const x =
+        (1 - r.t) ** 2 * r.startX +
+        2 * (1 - r.t) * r.t * r.controlX +
+        r.t ** 2 * r.targetX;
+      const y =
+        (1 - r.t) ** 2 * r.startY +
+        2 * (1 - r.t) * r.t * r.controlY +
+        r.t ** 2 * r.targetY;
+
+      r.x = x;
+      r.y = y;
 
       if (r.img._loaded) {
         const w = (r.img.naturalWidth || r.img.width) / 5;
@@ -780,14 +796,7 @@ function render(timestamp) {
       const xs = slotXs();
       const centerBinX = xs[1];
 
-      if (
-        (r.velocityX > 0 && r.x >= centerBinX) ||
-        (r.velocityX < 0 && r.x <= centerBinX)
-      ) {
-        r.x = centerBinX;
-        r.velocityX = 0;
-        r.velocityY = 0;
-
+      if (r.t >= 1) {
         const binId = binIds[centerIndex % binIds.length];
         const binType = images.bins[binId].binType;
 
@@ -797,8 +806,6 @@ function render(timestamp) {
           placedAt: performance.now(),
         });
 
-        //-----------------MESSAGES-----------------//
-        //---------------------------------------//
         if (r.type === binType) {
           streak++;
           const gained = 10 * streak;
@@ -818,7 +825,6 @@ function render(timestamp) {
         updateScoreDisplay();
         updateStreakDisplay();
         scoreMessageTime = performance.now();
-
         activeResiduals.splice(i, 1);
       }
     }
