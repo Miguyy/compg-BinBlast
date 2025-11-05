@@ -181,9 +181,10 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 //-----------------SCORE, STREAK & TIMER SYSTEM-----------------//
+//---------------------------------------//
 let score = 0;
 let streak = 0;
-let gameDuration = 120; // 2 minutes
+let gameDuration = 120;
 let timeLeft = gameDuration;
 let timerInterval = null;
 let gameEnded = false;
@@ -217,12 +218,101 @@ function startGameTimer() {
       timeLeft--;
       updateTimerDisplay();
     } else {
-        clearInterval(timerInterval);
-        gameEnded = true;
-        activeResiduals = []; // stop all items
-        alert(`⏰ Time’s up! Your final score: ${score}`);
-      }
+      clearInterval(timerInterval);
+      gameEnded = true;
+      activeResiduals = [];
+
+      showEndDialog();
+    }
   }, 1000);
+}
+
+// ---------- END-GAME OVERLAY ---------- //
+//----------------------------------//
+let _endDialogShown = false;
+
+function showEndDialog() {
+  if (_endDialogShown) return;
+  _endDialogShown = true;
+
+  const overlay = document.createElement("div");
+  overlay.id = "gameEndOverlay";
+  Object.assign(overlay.style, {
+    position: "fixed",
+    left: "0",
+    top: "0",
+    width: "100%",
+    height: "100%",
+    background: "rgba(0,0,0,0.6)",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    zIndex: "9999",
+    pointerEvents: "auto",
+  });
+
+  const panel = document.createElement("div");
+  panel.id = "gameEndPanel";
+  Object.assign(panel.style, {
+    background: "#fff",
+    padding: "24px",
+    borderRadius: "8px",
+    minWidth: "320px",
+    textAlign: "center",
+  });
+
+  const msg = document.createElement("p");
+  msg.id = "finalScoreText";
+  msg.textContent = `⏰ Time’s up! Your final score: ${score}`;
+  msg.style.marginBottom = "18px";
+  msg.style.fontSize = "18px";
+  msg.style.color = "#000";
+
+  const actions = document.createElement("div");
+  actions.style.display = "flex";
+  actions.style.justifyContent = "center";
+  actions.style.gap = "6px";
+
+  const leaveBtn = document.createElement("div");
+  leaveBtn.className = "goback-game-button";
+  leaveBtn.style.cursor = "pointer";
+  leaveBtn.innerHTML = `<button id="goback-game-button"><a href="../html/index.html">Leave</a></button>`;
+  leaveBtn.style.marginRight = "24px";
+
+  const restartBtn = document.createElement("div");
+  restartBtn.className = "try-game-button";
+  restartBtn.style.cursor = "pointer";
+  restartBtn.innerHTML = `<button id="try-game-button"><a href="#">Restart</a></button>`;
+
+  /* [leaveBtn, restartBtn].forEach((b) => {
+    b.style.display = "inline-flex";
+    b.style.alignItems = "center";
+    b.style.justifyContent = "center";
+    b.style.padding = "6px 2px";
+  }); */
+
+  actions.appendChild(restartBtn);
+  actions.appendChild(leaveBtn);
+
+  panel.appendChild(msg);
+  panel.appendChild(actions);
+  overlay.appendChild(panel);
+  document.body.appendChild(overlay);
+
+  restartBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+    hideEndDialog();
+    resetGame();
+    _endDialogShown = false;
+  });
+
+  leaveBtn.addEventListener("click", (e) => {});
+}
+
+function hideEndDialog() {
+  const el = document.getElementById("gameEndOverlay");
+  if (el) el.remove();
+  _endDialogShown = false;
 }
 
 function resetGame() {
