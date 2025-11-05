@@ -36,6 +36,32 @@
           pointer-events: none;
         "
       />
+      <!-- GAME INFO BAR -->
+      <div
+        id="gameInfo"
+        style="
+          position: absolute;
+          top: 82px;
+          left: 50%;
+          transform: translateX(-50%);
+          background: rgba(255, 255, 255, 0.92);
+          border: 2px solid black;
+          border-bottom: none;
+          border-radius: 12px 12px 0 0;
+          padding: 8px 25px;
+          font-family: Arial, sans-serif;
+          font-size: 18px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          gap: 40px;
+          z-index: 5;
+        "
+      >
+        <div><strong>Score:</strong> <span id="scoreValue">0</span></div>
+        <div><strong>Time:</strong> <span id="timerValue">02:00</span></div>
+        <div><strong>Streak:</strong> <span id="streakValue">0</span></div>
+      </div>
       <!-- CANVAS -->
       <canvas
         id="binBlastCanvas"
@@ -43,6 +69,7 @@
         height="700"
         style="border: 2px solid black"
       >
+      
         Your browser does not support the HTML5 canvas tag.
       </canvas>
       <video
