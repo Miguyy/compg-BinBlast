@@ -180,6 +180,62 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
+//-----------------SCORE, STREAK & TIMER SYSTEM-----------------//
+let score = 0;
+let streak = 0;
+let gameDuration = 120; // 2 minutes
+let timeLeft = gameDuration;
+let timerInterval = null;
+let gameEnded = false;
+
+function updateScoreDisplay() {
+  const el = document.getElementById("scoreValue");
+  if (el) el.textContent = score;
+}
+
+function updateStreakDisplay() {
+  const el = document.getElementById("streakValue");
+  if (el) el.textContent = streak;
+}
+
+function updateTimerDisplay() {
+  const el = document.getElementById("timerValue");
+  if (!el) return;
+  const min = Math.floor(timeLeft / 60)
+    .toString()
+    .padStart(2, "0");
+  const sec = (timeLeft % 60).toString().padStart(2, "0");
+  el.textContent = `${min}:${sec}`;
+
+  if (timeLeft <= 10) el.style.color = timeLeft % 2 ? "red" : "black";
+  else el.style.color = "black";
+}
+
+function startGameTimer() {
+  timerInterval = setInterval(() => {
+    if (timeLeft > 0) {
+      timeLeft--;
+      updateTimerDisplay();
+    } else {
+        clearInterval(timerInterval);
+        gameEnded = true;
+        activeResiduals = []; // stop all items
+        alert(`⏰ Time’s up! Your final score: ${score}`);
+      }
+  }, 1000);
+}
+
+function resetGame() {
+  score = 0;
+  streak = 0;
+  timeLeft = gameDuration;
+  gameEnded = false;
+  updateScoreDisplay();
+  updateStreakDisplay();
+  updateTimerDisplay();
+  startGameTimer();
+}
+
 //-----------------CANVAS-----------------//
 //---------------------------------------//
 const canvas = document.getElementById("binBlastCanvas");
@@ -744,6 +800,9 @@ function render(timestamp) {
         //-----------------MESSAGES-----------------//
         //---------------------------------------//
         if (r.type === binType) {
+          streak++;
+          const gained = 10 * streak;
+          score += gained;
           clearDamageEffect();
           scoreMessage = { text: "Great job!!!", color: "green" };
           startFireworks();
@@ -751,7 +810,13 @@ function render(timestamp) {
           stopFireworks();
           scoreMessage = { text: "Not looking good!!!", color: "red" };
           triggerDamageEffect();
+          streak = 0;
+          timeLeft = Math.max(0, timeLeft - 5);
+          updateTimerDisplay();
         }
+
+        updateScoreDisplay();
+        updateStreakDisplay();
         scoreMessageTime = performance.now();
 
         activeResiduals.splice(i, 1);
@@ -810,10 +875,15 @@ function render(timestamp) {
 //---------------------------------------//
 requestAnimationFrame(render);
 
+document.addEventListener("DOMContentLoaded", () => {
+  resetGame(); // start timer, reset score, streak
+});
+
 //-----------------EVENTS (BINS)-----------------//
 //---------------------------------------//
 window.addEventListener("keydown", (e) => {
   if (animating) return;
+  if (gameEnded) return;
   if (e.key === "ArrowRight") {
     e.preventDefault();
     animating = true;
@@ -832,6 +902,7 @@ window.addEventListener("keydown", (e) => {
 //-----------------EVENTS (CANNON)-----------------//
 //---------------------------------------//
 window.addEventListener("keydown", (e) => {
+  if (gameEnded) return;
   if (e.code === "Space" || e.key === " ") {
     e.preventDefault();
     fireResidual();
