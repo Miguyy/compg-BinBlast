@@ -382,6 +382,7 @@ function resetGame() {
   score = 0; //reset score
   streak = 0; //reset streak
   timeLeft = gameDuration; //reset timer
+  gameStarted = true; //set game started flag
   gameEnded = false; //reset game ended flag
   updateScoreDisplay();
   updateStreakDisplay();
