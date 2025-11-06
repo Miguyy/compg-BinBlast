@@ -234,41 +234,105 @@ canvas {
   box-shadow: 0 0 0 3px rgba(134, 50, 40, 0.12);
 }
 
-/* ------------------------ RESPONSIVENESS ------------------------ */
+/* ------------------------ RESPONSIVENESS (FIXED WITH SCALE) ------------------------ */
 /* ------------------------------------------------------------------------ */
+#centerCanvas {
+  position: relative;
+  width: 80vw;
+  max-width: 1400px;
+  aspect-ratio: 2 / 1;
+  margin: 0 auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transform-origin: top center;
+  transition: transform 0.3s ease;
+}
+
+#binBlastCanvas {
+  width: 100%;
+  height: auto;
+}
+
+#videoCanvas {
+  position: absolute;
+  top: 10%;
+  right: 5%;
+  width: 20%;
+  height: auto;
+  border: 2px solid rgba(0, 0, 0, 0.6);
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 1);
+  z-index: 60;
+}
+
+#nextResidualLabel {
+  position: absolute;
+  bottom: 5%;
+  right: 6%;
+  background: white;
+  color: #863228;
+  padding: 0.8em 1.2em;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: Arial, sans-serif;
+  font-weight: bold;
+  font-size: clamp(16px, 1.5vw, 22px);
+  border: 2px solid black;
+  z-index: 80;
+}
 
 @media (max-width: 1920px) {
-  html {
-    zoom: 1;
-  }
-  #nextResidualLabel {
-    transform: translateY(-40px);
+  #centerCanvas {
+    transform: scale(1);
   }
 }
 
 @media (max-width: 1600px) {
-  html {
-    zoom: 0.8;
-  }
-  #nextResidualLabel {
-    transform: translateY(0px);
+  #centerCanvas {
+    transform: scale(0.8);
   }
 }
 
 @media (max-width: 1366px) {
-  html {
-    zoom: 0.75;
-  }
-  #nextResidualLabel {
-    transform: translateY(-80px);
+  #centerCanvas {
+    transform: scale(0.75);
   }
 }
 
 @media (max-width: 1024px) {
-  html {
-    zoom: 0.7;
+  #centerCanvas {
+    transform: scale(0.68);
   }
-  #nextResidualLabel {
-    transform: translateY(-100px);
+}
+
+.page-scale {
+  transform-origin: top center;
+  transition: transform 0.3s ease;
+}
+
+@media (max-width: 1920px) {
+  .page-scale {
+    transform: scale(1);
+  }
+}
+
+@media (max-width: 1600px) {
+  .page-scale {
+    transform: scale(0.8);
+  }
+}
+
+@media (max-width: 1366px) {
+  .page-scale {
+    transform: scale(0.75);
+  }
+}
+
+@media (max-width: 1024px) {
+  .page-scale {
+    transform: scale(0.68);
   }
 }
