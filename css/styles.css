@@ -7,23 +7,10 @@
   overflow-x: hidden;
 }
 
-/* #body-game {
-  min-height: 100vh;
-  margin: 0;
-  background: linear-gradient(
-    180deg,
-    #16b5ff 36.18%,
-    #43d4ff 67.3%,
-    #a2f7fe 83.93%
-  );
-
-  background-attachment: fixed;
-} */
-
 #body-game {
   overflow-y: hidden;
   overflow-x: hidden;
-  background:  #58f5eb;
+  background: #58f5eb;
 }
 
 /* ------------------------ CANVAS STYLES ------------------------ */
@@ -245,4 +232,43 @@ canvas {
 #goback-game-button:focus {
   outline: none;
   box-shadow: 0 0 0 3px rgba(134, 50, 40, 0.12);
+}
+
+/* ------------------------ RESPONSIVENESS ------------------------ */
+/* ------------------------------------------------------------------------ */
+
+@media (max-width: 1920px) {
+  html {
+    zoom: 1;
+  }
+  #nextResidualLabel {
+    transform: translateY(-40px);
+  }
+}
+
+@media (max-width: 1600px) {
+  html {
+    zoom: 0.8;
+  }
+  #nextResidualLabel {
+    transform: translateY(0px);
+  }
+}
+
+@media (max-width: 1366px) {
+  html {
+    zoom: 0.75;
+  }
+  #nextResidualLabel {
+    transform: translateY(-80px);
+  }
+}
+
+@media (max-width: 1024px) {
+  html {
+    zoom: 0.7;
+  }
+  #nextResidualLabel {
+    transform: translateY(-100px);
+  }
 }

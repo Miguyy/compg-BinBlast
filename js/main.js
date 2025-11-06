@@ -1,7 +1,5 @@
-//-----------------INDEX-----------------//
-//---------------------------------------//
-//-----------------BUTTON-----------------//
-//---------------------------------------//
+//================= INDEX =================//
+//----------------- BUTTON ----------------//
 document.addEventListener("DOMContentLoaded", () => {
   const btn = document.getElementById("try-game-button");
   if (!btn) return;
@@ -138,10 +136,8 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
-//-----------------GAME-----------------//
-//---------------------------------------//
-//-----------------BUTTON-----------------//
-//---------------------------------------//
+//================= GAME =================//
+//----------------- BUTTON ----------------//
 document.addEventListener("DOMContentLoaded", () => {
   const btn = document.getElementById("goback-game-button");
   if (!btn) return;
@@ -182,24 +178,27 @@ document.addEventListener("DOMContentLoaded", () => {
 
 //-----------------SCORE, STREAK & TIMER SYSTEM-----------------//
 //---------------------------------------//
-let score = 0;
-let streak = 0;
-let gameDuration = 120;
-let timeLeft = gameDuration;
-let timerInterval = null;
-let gameEnded = false;
+let score = 0; //current player score
+let streak = 0; //number of consecutive correct throws
+let gameDuration = 120; //total game time in seconds = "2 minutes"
+let timeLeft = gameDuration; //countdown timer
+let timerInterval = null; //reference to the timer interval
+let gameEnded = false; //flag to indicate if the game has ended
 
 function updateScoreDisplay() {
+  //updates the score display in the UI
   const el = document.getElementById("scoreValue");
   if (el) el.textContent = score;
 }
 
 function updateStreakDisplay() {
+  //updates the streak display in the UI
   const el = document.getElementById("streakValue");
   if (el) el.textContent = streak;
 }
 
 function updateTimerDisplay() {
+  //updates the timer display in the UI
   const el = document.getElementById("timerValue");
   if (!el) return;
   const min = Math.floor(timeLeft / 60)
@@ -213,6 +212,7 @@ function updateTimerDisplay() {
 }
 
 function startGameTimer() {
+  //starts the countdown timer
   timerInterval = setInterval(() => {
     if (timeLeft > 0) {
       timeLeft--;
@@ -230,15 +230,19 @@ function startGameTimer() {
 //-----------------START-GAME OVERLAY-----------------//
 //----------------------------------//
 
-let _startGameShow = true;
+let _startGameShow = true; //flag to ensure the start dialog is shown only once
+let gameStarted = false; //flag to indicate if the game has started
 
 function showStartGameDialog() {
+  //displays the start game dialog
+  ml5Active = false;
   if (!_startGameShow) return;
   _startGameShow = false;
 
   const startOverlay = document.createElement("div");
   startOverlay.id = "gameStartOverlay";
   Object.assign(startOverlay.style, {
+    //styles for the overlay
     position: "fixed",
     left: "0",
     top: "0",
@@ -255,6 +259,7 @@ function showStartGameDialog() {
   const startPanel = document.createElement("div");
   startPanel.id = "gameStartPanel";
   Object.assign(startPanel.style, {
+    //styles for the panel
     background: "#fff",
     padding: "24px",
     borderRadius: "8px",
@@ -262,17 +267,19 @@ function showStartGameDialog() {
     textAlign: "center",
   });
 
-  const startMsg = document.createElement("p");
+  const startMsg = document.createElement("p"); //start message
   startMsg.id = "startGameText";
   startMsg.textContent = `Get ready! The game is about to start!`;
-  startMsg.style.marginBottom = "18px";
+  startMsg.style.marginBottom = "4px";
   startMsg.style.fontSize = "18px";
   startMsg.style.color = "#000";
   startPanel.appendChild(startMsg);
   startOverlay.appendChild(startPanel);
   document.body.appendChild(startOverlay);
   setTimeout(() => {
+    //removes the overlay and starts the game after 5 seconds
     startOverlay.remove();
+    gameStarted = true;
     resetGame();
   }, 5000);
 }
@@ -286,15 +293,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
 // ---------- END-GAME OVERLAY ---------- //
 //----------------------------------//
-let _endDialogShown = false;
+let _endDialogShown = false; //flag to ensure the end dialog is shown only once
 
 function showEndDialog() {
+  //displays the end game dialog
+  ml5Active = false;
   if (_endDialogShown) return;
   _endDialogShown = true;
 
   const overlay = document.createElement("div");
   overlay.id = "gameEndOverlay";
   Object.assign(overlay.style, {
+    //styles for the overlay
     position: "fixed",
     left: "0",
     top: "0",
@@ -311,6 +321,7 @@ function showEndDialog() {
   const panel = document.createElement("div");
   panel.id = "gameEndPanel";
   Object.assign(panel.style, {
+    //styles for the panel
     background: "#fff",
     padding: "24px",
     borderRadius: "8px",
@@ -360,19 +371,22 @@ function showEndDialog() {
 }
 
 function hideEndDialog() {
+  //hides the end game dialog
   const el = document.getElementById("gameEndOverlay");
   if (el) el.remove();
   _endDialogShown = false;
 }
 
 function resetGame() {
-  score = 0;
-  streak = 0;
-  timeLeft = gameDuration;
-  gameEnded = false;
+  //resets the game state for a new game
+  score = 0; //reset score
+  streak = 0; //reset streak
+  timeLeft = gameDuration; //reset timer
+  gameEnded = false; //reset game ended flag
   updateScoreDisplay();
   updateStreakDisplay();
   updateTimerDisplay();
+  ml5Active = true; //reactivate ml5
   startGameTimer();
 }
 
@@ -549,22 +563,24 @@ const images = {
 
 //-----------------BINS PART-----------------//
 //---------------------------------------//
-const binIds = ["green", "blue", "yellow", "red"];
-let centerIndex = 1;
+const binIds = ["green", "blue", "yellow", "red"]; //order of bins
+let centerIndex = 1; //index of the center bin
 
-let animOffset = 0;
-let animating = false;
-let animStartTime = 0;
-let animFrom = 0;
-let animTo = 0;
+let animOffset = 0; //current animation offset
+let animating = false; //flag to indicate if an animation is in progress
+let animStartTime = 0; //animation start time
+let animFrom = 0; //animation start offset
+let animTo = 0; //animation target offset
 
 function easeOutCubic(t) {
-  return 1 - Math.pow(1 - t, 3);
+  //easing function for smooth animation
+  return 1 - Math.pow(1 - t, 3); //cubic ease-out
 }
 
 function slotXs() {
+  //calculates the x positions of the three bin slots
   const cx = canvas.width / 2;
-  return [cx - STEP, cx, cx + STEP];
+  return [cx - STEP, cx, cx + STEP]; //left, center, right
 }
 
 function clearCanvas() {
@@ -574,56 +590,62 @@ function clearCanvas() {
 }
 
 function drawBins() {
-  const xs = slotXs();
-  const n = binIds.length;
-  const left = (centerIndex - 1 + n) % n;
-  const center = centerIndex % n;
-  const right = (centerIndex + 1) % n;
+  //draws the bins on the canvas
+  const xs = slotXs(); //x positions of the slots
+  const n = binIds.length; //number of bins
+  const left = (centerIndex - 1 + n) % n; //index of the left bin
+  const center = centerIndex % n; //index of the center bin
+  const right = (centerIndex + 1) % n; //index of the right bin
   const slots = [
+    //slot data for drawing
     { x: xs[0] + animOffset, id: binIds[left] },
     { x: xs[1] + animOffset, id: binIds[center] },
     { x: xs[2] + animOffset, id: binIds[right] },
   ];
-  const drawY = 440;
+  const drawY = 440; //fixed y position for drawing bins
   slots.forEach((s) => {
+    //draw each bin
     const entry = images.bins[s.id];
     if (!entry.img._loaded) return;
     const centerX = s.x;
 
-    const isCenterSlot = s.id === binIds[center];
-    const useNoLid = entry.noLid._loaded && isCenterSlot;
-    const useImg = useNoLid ? entry.noLid : entry.img;
+    const isCenterSlot = s.id === binIds[center]; //check if it's the center slot
+    const useNoLid = entry.noLid._loaded && isCenterSlot; //use no-lid image for center slot if loaded
+    const useImg = useNoLid ? entry.noLid : entry.img; //choose image to use
 
-    const drawW = (useImg.naturalWidth || useImg.width) / 5;
-    const drawH = (useImg.naturalHeight || useImg.height) / 5;
-    const drawX = centerX - drawW / 2;
-    if (drawX + drawW < 0 || drawX > canvas.width) return;
-    ctx.drawImage(useImg, drawX, drawY, drawW, drawH);
+    const drawW = (useImg.naturalWidth || useImg.width) / 5; //calculate drawing width
+    const drawH = (useImg.naturalHeight || useImg.height) / 5; //calculate drawing height
+    const drawX = centerX - drawW / 2; //calculate drawing x position
+    if (drawX + drawW < 0 || drawX > canvas.width) return; //skip if out of canvas bounds
+    ctx.drawImage(useImg, drawX, drawY, drawW, drawH); //draw the bin image
   });
 }
 
 //-----------------CANNON PART-----------------//
 //---------------------------------------//
 function drawCannon() {
-  if (!images.cannon._loaded) return;
-  const img = images.cannon;
-  const drawW = (img.naturalWidth || img.width) / 4;
-  const drawH = (img.naturalHeight || img.height) / 4;
-  const drawX = canvas.width / 2 - drawW / 2;
-  ctx.drawImage(img, drawX, 570, drawW, drawH);
+  if (!images.cannon._loaded) return; //draw cannon image
+  const img = images.cannon; //get cannon image
+  const drawW = (img.naturalWidth || img.width) / 4; //calculate drawing width
+  const drawH = (img.naturalHeight || img.height) / 4; //calculate drawing height
+  const drawX = canvas.width / 2 - drawW / 2; //calculate drawing x position
+  ctx.drawImage(img, drawX, 570, drawW, drawH); //draw the cannon image
 }
 
 //-----------------CANNON (RESIDUALS) PART-----------------//
 //---------------------------------------//
-let activeResiduals = [];
-let nextResidual = null;
+let activeResiduals = []; //array to hold active residuals being thrown
+let nextResidual = null; //next residual to be thrown
 
-let currentBinResidual = [[], [], [], []];
+let currentBinResidual = [[], [], [], []]; //tracks residuals in each bin
 
-let scoreMessage = null;
-let scoreMessageTime = 0;
+let scoreMessage = null; //message to display score feedback
+let scoreMessageTime = 0; //time to display the score message
+
+let whileThrowing = false; //flag to prevent multiple throws at once
 
 function getRandomResidual() {
+  //selects a random residual from the available images
   const residualKeys = Object.keys(images.residuals);
   const randomKey =
     residualKeys[Math.floor(Math.random() * residualKeys.length)];
@@ -631,9 +653,10 @@ function getRandomResidual() {
 }
 
 function loadNextResidual() {
+  //loads the next residual to be thrown
   nextResidual = getRandomResidual();
-  const label = document.getElementById("nextResidualLabel");
-  const imgEl = document.getElementById("nextResidualImage");
+  const label = document.getElementById("nextResidualLabel"); //label element for displaying the next residual type
+  const imgEl = document.getElementById("nextResidualImage"); //image element for displaying the next residual
   if (label) {
     label.style.background = "white";
     label.style.color = "#863228";
@@ -651,6 +674,7 @@ function loadNextResidual() {
 loadNextResidual();
 
 function updateNextResidualUI() {
+  //updates the UI to show the next residual
   const label = document.getElementById("nextResidualLabel");
   const imgEl = document.getElementById("nextResidualImage");
   if (!label || !imgEl) return false;
@@ -675,19 +699,23 @@ function updateNextResidualUI() {
 }
 
 if (!updateNextResidualUI()) {
+  //if UI update fails, wait for DOMContentLoaded to retry
   document.addEventListener(
     "DOMContentLoaded",
     () => {
       updateNextResidualUI();
     },
-    { once: true }
+    { once: true } //only run once
   );
 }
 
 function fireResidual() {
-  if (!nextResidual) loadNextResidual();
-  const residualData = nextResidual;
-  if (!residualData) return;
+  //throws the next residual from the cannon
+  if (!nextResidual) loadNextResidual(); //ensure there's a residual to throw
+  const residualData = nextResidual; //get the next residual data
+  if (!residualData || whileThrowing) return; //prevent multiple throws at once
+
+  whileThrowing = true;
 
   const img = residualData.img;
 
@@ -697,10 +725,11 @@ function fireResidual() {
   const centerBinX = xs[1];
   const targetY = 440;
 
-  const controlX = (startX + centerBinX) / 2;
-  const controlY = canvas.height * 0.3;
+  const controlX = (startX + centerBinX) / 2; //control point for Bezier curve
+  const controlY = canvas.height * 0.3; //control point for Bezier curve
 
   activeResiduals.push({
+    //add the residual to the active list for animation
     img,
     type: residualData.residualType,
     startX,
@@ -719,8 +748,8 @@ function fireResidual() {
 
 //-----------------CLOUDS-----------------//
 //---------------------------------------//
-let canvasClouds = [];
-let cloudsInited = false;
+let canvasClouds = []; //array to hold cloud data
+let cloudsInited = false; //flag to indicate if clouds have been initialized
 let _lastCloudUpdate = performance.now();
 
 function initCanvasClouds(count = 4) {
@@ -748,6 +777,7 @@ function initCanvasClouds(count = 4) {
     const opacity = rand(0.65, 1);
 
     canvasClouds.push({
+      //add cloud data to the array
       a: { x: aX, y },
       b: { x: bX, y },
       t: startT,
@@ -801,30 +831,31 @@ function drawCanvasClouds() {
 
 //-----------------FUNCTION TRIGGER DAMAGE EFFECT-----------------//
 //---------------------------------------//
-let damageAlpha = 0;
-let damageActive = false;
+let damageAlpha = 0; //alpha value for damage effect
+let damageActive = false; //flag to indicate if damage effect is active
 
 function triggerDamageEffect() {
-  damageAlpha = 0.6;
-  damageActive = true;
+  //activates the damage effect
+  damageAlpha = 0.6; //set alpha to semi-transparent
+  damageActive = true; //set active flag
 }
 
 //-----------------FUNCTION CLEAR TRIGGER DAMAGE EFFECT-----------------//
 //---------------------------------------//
 function clearDamageEffect() {
-  damageAlpha = 0;
-  damageActive = false;
+  //deactivates the damage effect
+  damageAlpha = 0; //reset alpha
+  damageActive = false; //reset active flag
 }
 
-//-----------------FUNCTION FIREWORKS EFFECT-----------------//
-//---------------------------------------//
+//================FUNCTION FIREWORKS EFFECT=============//
 //-----------------VARIABLES + CLASSES FOR THE FIREWORKS-----------------//
-//---------------------------------------//
-let fireworks = [];
-let fireworksActive = false;
-let fireworksEndTime = 0;
+let fireworks = []; //array to hold active firework particles
+let fireworksActive = false; //flag to indicate if fireworks are active
+let fireworksEndTime = 0; //time to end fireworks effect
 
 class FireParticle {
+  //class representing a single firework particle
   constructor(x, y, color) {
     this.x = x;
     this.y = y;
@@ -834,12 +865,14 @@ class FireParticle {
     this.alpha = 1;
   }
   update() {
+    //update particle position and state
     this.x += this.vx;
     this.y += this.vy;
     this.vy += 0.05;
     this.alpha -= 0.02;
   }
   draw(ctx) {
+    //draw the particle on the canvas
     ctx.globalAlpha = this.alpha;
     ctx.fillStyle = this.color;
     ctx.beginPath();
@@ -850,6 +883,7 @@ class FireParticle {
 }
 
 function spawnFirework(x, y) {
+  //spawns a firework explosion at (x, y)
   const colors = [
     "#ff4040",
     "#ffbf00",
@@ -859,17 +893,20 @@ function spawnFirework(x, y) {
     "#ffffff",
   ];
   for (let i = 0; i < 60; i++) {
+    //create 60 particles
     const color = colors[Math.floor(Math.random() * colors.length)];
     fireworks.push(new FireParticle(x, y, color));
   }
 }
 
 function startFireworks(duration = 2000) {
+  //starts the fireworks effect for a specified duration
   fireworksActive = true;
   fireworksEndTime = performance.now() + duration;
 }
 
 function stopFireworks() {
+  //stops the fireworks effect immediately
   fireworksActive = false;
   fireworks = [];
 }
@@ -877,6 +914,7 @@ function stopFireworks() {
 //-----------------FUNCTION THAT CALLS ALL THE DRAWING FUNCTIONS-----------------//
 //---------------------------------------//
 function drawAll() {
+  //draws all game elements on the canvas
   clearCanvas();
   drawBins();
   drawCannon();
@@ -886,7 +924,9 @@ function drawAll() {
 //-----------------FUNCTION TO RENDER EVERYTHING-----------------//
 //---------------------------------------//
 function render(timestamp) {
+  //main render loop
   if (animating) {
+    //handle bin animation
     if (!animStartTime) animStartTime = timestamp;
     const elapsed = timestamp - animStartTime;
     const t = Math.min(1, elapsed / ANIM_DURATION);
@@ -910,16 +950,17 @@ function render(timestamp) {
   drawAll();
 
   if (activeResiduals.length) {
+    //handle active residuals being thrown
     for (let i = activeResiduals.length - 1; i >= 0; i--) {
       const r = activeResiduals[i];
       const elapsed = timestamp - r.startTime;
       r.t = Math.min(1, elapsed / r.duration);
 
-      const x =
+      const x = //calculate Bezier curve position
         (1 - r.t) ** 2 * r.startX +
         2 * (1 - r.t) * r.t * r.controlX +
         r.t ** 2 * r.targetX;
-      const y =
+      const y = //calculate Bezier curve position
         (1 - r.t) ** 2 * r.startY +
         2 * (1 - r.t) * r.t * r.controlY +
         r.t ** 2 * r.targetY;
@@ -928,15 +969,17 @@ function render(timestamp) {
       r.y = y;
 
       if (r.img._loaded) {
+        //draw the residual image
         const w = (r.img.naturalWidth || r.img.width) / 5;
         const h = (r.img.naturalHeight || r.img.height) / 5;
         ctx.drawImage(r.img, r.x - w / 2, r.y - h / 2, w, h);
       }
 
-      const xs = slotXs();
+      const xs = slotXs(); //get slot x positions
       const centerBinX = xs[1];
 
       if (r.t >= 1) {
+        //handle residual reaching the bin
         const binId = binIds[centerIndex % binIds.length];
         const binType = images.bins[binId].binType;
 
@@ -947,6 +990,7 @@ function render(timestamp) {
         });
 
         if (r.type === binType) {
+          //correct throw
           streak++;
           const gained = 10 * streak;
           score += gained;
@@ -954,6 +998,7 @@ function render(timestamp) {
           scoreMessage = { text: "Great job!!!", color: "green" };
           startFireworks();
         } else {
+          //incorrect throw
           stopFireworks();
           scoreMessage = { text: "Not looking good!!!", color: "red" };
           triggerDamageEffect();
@@ -962,15 +1007,17 @@ function render(timestamp) {
           updateTimerDisplay();
         }
 
-        updateScoreDisplay();
-        updateStreakDisplay();
-        scoreMessageTime = performance.now();
-        activeResiduals.splice(i, 1);
+        updateScoreDisplay(); //update score UI
+        updateStreakDisplay(); //update streak UI
+        scoreMessageTime = performance.now(); //set time for score message display
+        activeResiduals.splice(i, 1); //remove residual from active list
+        whileThrowing = false; //allow next throw
       }
     }
   }
 
   if (scoreMessage) {
+    //display score message
     const elapsed = timestamp - scoreMessageTime;
     if (elapsed < 1000) {
       ctx.font = "40px Arial";
@@ -983,12 +1030,13 @@ function render(timestamp) {
   }
 
   if (damageActive) {
+    //handle damage effect overlay
     ctx.save();
     ctx.fillStyle = `rgba(255, 0, 0, ${damageAlpha})`;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     ctx.restore();
 
-    damageAlpha -= 0.005;
+    damageAlpha -= 0.005; //fade out effect
     if (damageAlpha <= 0) {
       damageAlpha = 0;
       damageActive = false;
@@ -996,6 +1044,7 @@ function render(timestamp) {
   }
 
   if (fireworksActive) {
+    //handle fireworks effect
     ctx.fillStyle = "rgba(0,0,0,0.15)";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -1024,15 +1073,17 @@ requestAnimationFrame(render);
 //-----------------EVENTS (BINS)-----------------//
 //---------------------------------------//
 window.addEventListener("keydown", (e) => {
-  if (animating) return;
-  if (gameEnded) return;
+  //handle bin navigation
+  if (!gameStarted || animating || gameEnded || whileThrowing) return;
   if (e.key === "ArrowRight") {
+    //handle right arrow key
     e.preventDefault();
     animating = true;
     animStartTime = 0;
     animFrom = 0;
     animTo = -STEP;
   } else if (e.key === "ArrowLeft") {
+    //handle left arrow key
     e.preventDefault();
     animating = true;
     animStartTime = 0;
@@ -1044,7 +1095,8 @@ window.addEventListener("keydown", (e) => {
 //-----------------EVENTS (CANNON)-----------------//
 //---------------------------------------//
 window.addEventListener("keydown", (e) => {
-  if (gameEnded) return;
+  //handle firing residuals
+  if (!gameStarted || gameEnded) return;
   if (e.code === "Space" || e.key === " ") {
     e.preventDefault();
     fireResidual();
@@ -1053,21 +1105,24 @@ window.addEventListener("keydown", (e) => {
 
 //-----------------ML5.js-----------------//
 //---------------------------------------//
-const canvas2 = document.getElementById("videoCanvas");
+const canvas2 = document.getElementById("videoCanvas"); //video canvas
 const ctx2 = canvas2.getContext("2d");
 
 const W2 = canvas2.width;
 const H2 = canvas2.height;
 
-let handPose2;
-let hands2 = [];
-let video2;
+let handPose2; //ml5 handpose model
+let hands2 = []; //detected hands and saves on the array
+let video2; //video element
 
 let circleX2 = W2 / 2;
 let circleY2 = H2 / 2;
 const smoothing2 = 0.2;
 
+let ml5Active = false;
+
 async function preload2() {
+  //preload function to initialize ml5 handpose
   video2 = await getVideo2();
   handPose2 = await ml5.handPose({ flipped: true });
   await handPose2.detectStart(video2, gotHands2);
@@ -1077,10 +1132,17 @@ async function preload2() {
 window.addEventListener("DOMContentLoaded", preload2);
 
 function gotHands2(results) {
+  //callback function to receive detected hands
   hands2 = results;
 }
 
 function render2() {
+  //render loop for video and hand tracking
+  if (!ml5Active || gameEnded) {
+    requestAnimationFrame(render2);
+    return;
+  }
+
   ctx2.clearRect(0, 0, W2, H2);
 
   ctx2.save();
@@ -1097,15 +1159,18 @@ function render2() {
   //-----------------FOR THE LEFT HAND-----------------//
   //---------------------------------------//
   if (hands2.length > 0) {
+    //check if any hands are detected
     const leftHand = hands2.find(
       (h) => h.handedness && h.handedness.toLowerCase() === "left"
     );
 
     if (leftHand) {
       const indexMcp = leftHand.keypoints.find(
+        //find the index finger keypoint
         (kp) => kp.name === "index_finger_mcp"
       );
       const indexTip = leftHand.keypoints.find(
+        //find the index finger keypoint
         (kp) => kp.name === "index_finger_tip"
       );
 
@@ -1158,14 +1223,18 @@ function render2() {
     //-----------------FOR THE RIGHT HAND-----------------//
     //---------------------------------------//
     const rightHand = hands2.find(
+      //find the right hand
       (h) => h.handedness && h.handedness.toLowerCase() === "right"
     );
 
     if (rightHand) {
+      //if right hand is detected
       const thumbTip = rightHand.keypoints.find(
+        //find the thumb keypoint
         (kp) => kp.name === "thumb_tip"
       );
       const indexTip = rightHand.keypoints.find(
+        //find the index finger keypoint
         (kp) => kp.name === "index_finger_tip"
       );
 
@@ -1186,6 +1255,7 @@ function render2() {
         ctx2.stroke();
 
         if (pinchDist > 100 && !render2.lastFired) {
+          //detect pinch gesture to fire residual
           fireResidual();
           render2.lastFired = true;
           setTimeout(() => (render2.lastFired = false), 1000);
@@ -1213,23 +1283,23 @@ async function getVideo2() {
 
 //-----------------VARIABLES + CLASSES FOR THE BINS AND THE RESIDUALS-----------------//
 //---------------------------------------//
-const currentBin = ["green", "blue", "yellow", "red"];
+const currentBin = ["green", "blue", "yellow", "red"]; //bin types in order
 const currentResidual = [
   "glass",
   "paper",
   "plastic",
   "plasticMetal",
   "battery",
-];
+]; //residual types
 
 class Bin {
   constructor(binType) {
     this.binType = binType;
   }
-}
+} //class representing a bin
 
 class Residual {
   constructor(residualType) {
     this.residualType = residualType;
   }
-}
+} //class representing a residual
